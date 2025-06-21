@@ -1,0 +1,419 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.info-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.client-info, .seller-info {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.client-info h3, .seller-info h3 {
+  margin-top: 0;
+  color: #495057;
+}
+
+.form-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.form-grid input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.add-product-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border: 1px solid #e0e0e0;
+}
+
+.add-product-section h3 {
+  margin-top: 0;
+  color: #495057;
+}
+
+.product-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  align-items: end;
+}
+
+.product-form input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.btn-add {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.btn-add:hover {
+  background-color: #218838;
+}
+
+.products-table-container {
+  overflow-x: auto;
+  margin-bottom: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.products-table th,
+.products-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.products-table th {
+  background-color: #343a40;
+  color: white;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+}
+
+.products-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.products-table td.selected {
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-remove {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-remove:hover {
+  background-color: #c82333;
+}
+
+.profit-section {
+  background: #e8f4f8;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border: 1px solid #bee5eb;
+}
+
+.profit-section h3 {
+  margin-top: 0;
+  color: #0c5460;
+}
+
+.percentage-selector {
+  margin-bottom: 20px;
+}
+
+.percentage-selector label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.percentage-selector select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.profit-display {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #bee5eb;
+}
+
+.profit-display h4 {
+  margin-top: 0;
+  color: #0c5460;
+}
+
+.profit-display p {
+  margin: 5px 0;
+}
+
+.pdf-buttons {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.btn-preview, .btn-generate {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0 10px;
+  transition: background-color 0.3s;
+}
+
+.btn-preview:hover, .btn-generate:hover {
+  background-color: #0056b3;
+}
+
+.pdf-preview {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 30px;
+  margin-top: 30px;
+}
+
+.preview-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.preview-header {
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 20px;
+}
+
+.preview-header h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #333;
+}
+
+.preview-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.preview-client, .preview-seller {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.preview-client h4, .preview-seller h4 {
+  margin-top: 0;
+  color: #495057;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.preview-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.preview-table th,
+.preview-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.preview-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.preview-totals {
+  text-align: right;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.preview-totals p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .info-section {
+    grid-template-columns: 1fr;
+  }
+
+  .product-form {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-parties {
+    grid-template-columns: 1fr;
+  }
+  .proforma-header-form {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .preview-header-complete {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .preview-header-left {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .preview-header-right {
+    text-align: center;
+  }
+
+  .proforma-title {
+    font-size: 24px;
+  }
+
+}
+
+
+.validity-text {
+  color: red;
+  font-size: 14px;
+  margin-top: -20px;
+  text-align: left;
+  font-style: italic;
+}
+
+
+
+/* Sección de datos de proforma */
+.proforma-header-section {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #dee2e6;
+}
+
+.proforma-header-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: end;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #495057;
+}
+
+.form-field input {
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Header completo de la vista previa */
+.preview-header-complete {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding: 15px 0;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.preview-header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;    /* Centra horizontalmente */
+}
+
+.logo-container {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 35px;
+}
+
+.company-logo {
+  max-width: 150px;       /* Ajusta según necesidad */
+  max-height: 80px;       /* Ajusta según necesidad */
+  object-fit: contain;
+}
+
+.proforma-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.preview-header-right {
+  text-align: right;
+  font-size: 14px;
+  color: #495057;
+}
+
+.preview-header-right p {
+  margin: 5px 0;
+  font-size: 14px;
+}

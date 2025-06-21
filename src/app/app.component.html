@@ -112,7 +112,7 @@
   <!-- Selector de porcentaje para ganancia -->
   <div class="profit-section">
     <h3>Calcular Ganancia</h3>
-    <div class="percentage-selector">
+    <!--<div class="percentage-selector">
       <label>Seleccionar porcentaje de venta:</label>
       <select [(ngModel)]="selectedPercentageIndex" (change)="calculateProfit()">
         <option value="0">+1%</option>
@@ -125,7 +125,7 @@
         <option value="7">+1.35%</option>
         <option value="8">+1.5%</option>
       </select>
-    </div>
+    </div>-->
 
     <div class="profit-display" *ngIf="totalProfit > 0">
       <h4>Resumen de Ganancias (con IVA 15%)</h4>
@@ -180,26 +180,29 @@
       </div>
 
       <div class="preview-table">
-        <table>
-          <thead>
-          <tr>
-            <th>ITEM</th>
-            <th>CANTIDAD</th>
-            <th>DESCRIPCION</th>
-            <th>P.UNITARIO</th>
-            <th>TOTAL</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let product of products; let i = index">
-            <td>{{ i+1 }}</td>
-            <td>{{ product.quantity }}</td>
-            <td>{{ product.name }}</td>
-            <td>${{ (product.calculatedPrices[selectedPercentageIndex] / IVA_FACTOR).toFixed(2) }}</td>
-            <td>${{ (product.totalPrices[selectedPercentageIndex]/ IVA_FACTOR).toFixed(2) }}</td>
-          </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table>
+            <thead>
+            <tr>
+              <th>ITEM</th>
+              <th>CANTIDAD</th>
+              <th>DESCRIPCION</th>
+              <th>P.UNITARIO</th>
+              <th>TOTAL</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let product of products; let i = index">
+              <td>{{ i+1 }}</td>
+              <td>{{ product.quantity }}</td>
+              <td>{{ product.name }}</td>
+              <td>${{ (product.calculatedPrices[selectedPercentageIndex] / IVA_FACTOR).toFixed(2) }}</td>
+              <td>${{ (product.totalPrices[selectedPercentageIndex]/ IVA_FACTOR).toFixed(2) }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
         <div class="validity-text">
           * Tres días de validez
         </div>

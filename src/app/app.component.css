@@ -352,10 +352,9 @@
 }
 
 .proforma-header-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: end;
+  display: flex;
+  flex-wrap: wrap; /* ✅ Permite que los elementos bajen en móvil */
+  gap: 12px;        /* Espacio entre campos */
 }
 
 .form-field {

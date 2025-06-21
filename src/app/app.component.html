@@ -34,8 +34,8 @@
     <div class="client-info">
       <h3>Datos del Cliente</h3>
       <div class="form-grid">
-        <input [(ngModel)]="client.name" placeholder="Nombre del cliente">
-        <input [(ngModel)]="client.document" placeholder="Documento">
+        <input [(ngModel)]="client.name" placeholder="Nombre del cliente" (ngModelChange)="client.name = toUpperCaseOnly($event)">
+        <input [(ngModel)]="client.document" placeholder="Documento" (ngModelChange)="client.document = toUpperCaseOnly($event)">
         <input [(ngModel)]="client.address" placeholder="Dirección">
         <input [(ngModel)]="client.email" placeholder="Email">
       </div>
@@ -44,7 +44,7 @@
     <div class="seller-info">
       <h3>Datos del Vendedor</h3>
       <div class="form-grid">
-        <input [(ngModel)]="seller.name" placeholder="Nombre del vendedor">
+        <input [(ngModel)]="seller.name" placeholder="Nombre del vendedor" (ngModelChange)="seller.name = toUpperCaseOnly($event)">
         <input [(ngModel)]="seller.document" placeholder="Documento">
         <input [(ngModel)]="seller.address" placeholder="Dirección">
         <input [(ngModel)]="seller.email" placeholder="Email">

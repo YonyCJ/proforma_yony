@@ -390,6 +390,12 @@ export class AppComponent {
   }
 
 
+  toUpperCaseOnly(value: string): string {
+    return value.toUpperCase().replace(/[^A-Z\s]/g, ''); // Solo letras mayúsculas y espacios
+  }
+
+
+
 
 
 }

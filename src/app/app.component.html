@@ -48,13 +48,26 @@
   <div class="add-product-section">
     <h3>Agregar Producto</h3>
     <div class="product-form">
-      <input [(ngModel)]="newProduct.name" placeholder="Nombre del producto">
-      <input [(ngModel)]="newProduct.quantity" type="number" placeholder="Cantidad">
-      <input [(ngModel)]="newProduct.purchasePrice" type="number" placeholder="Precio de compra" step="0.01">
-      <input [(ngModel)]="newProduct.salePrice" type="number" placeholder="Precio de venta base" step="0.01">
+      <div class="form-group">
+        <input [(ngModel)]="newProduct.name" type="text" required>
+        <label>Nombre del producto</label>
+      </div>
+      <div class="form-group">
+        <input [(ngModel)]="newProduct.quantity" type="number" required>
+        <label>Cantidad</label>
+      </div>
+      <div class="form-group">
+        <input [(ngModel)]="newProduct.purchasePrice" type="number" step="0.01" required>
+        <label>Precio de compra</label>
+      </div>
+      <div class="form-group">
+        <input [(ngModel)]="newProduct.salePrice" type="number" step="0.01" required>
+        <label>Precio de venta base</label>
+      </div>
       <button (click)="addProduct()" class="btn-add">Agregar Producto</button>
     </div>
   </div>
+
 
   <!-- Tabla de productos -->
   <div class="products-table-container">

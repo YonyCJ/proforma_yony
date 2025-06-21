@@ -497,3 +497,36 @@ input[type="number"] {
   border-collapse: collapse;
   min-width: 600px; /* Ajusta este valor según tus columnas */
 }
+
+
+.preview-header-complete {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Alinea los items al inicio (parte superior) */
+  width: 100%;
+}
+
+.preview-header-right {
+  text-align: right; /* Alinea el texto a la derecha */
+  font-size: 14px;
+  color: #495057;
+  margin-left: auto; /* Empuja el bloque a la derecha */
+}
+
+.preview-header-right p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* Estilos para móvil - ya no necesitas cambiar la alineación */
+@media (max-width: 768px) {
+  .preview-header-complete {
+    flex-direction: row; /* Mantiene la disposición en fila (no cambia a columna) */
+  }
+
+  /* Opcional: ajusta el margen superior si es necesario */
+  .preview-header-right {
+    position: relative;
+    top: 20px; /* Mantiene el desplazamiento hacia abajo como en desktop */
+  }
+}

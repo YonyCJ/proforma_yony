@@ -89,15 +89,11 @@ export class AppComponent {
     this.proformaData.date = new Date().toISOString().split('T')[0];
   }
 
-  formatDate(dateString: string): string {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+  formatDate(dateStr: string): string {
+    const [year, month, day] = dateStr.split('-');
+    return `${day}/${month}/${year}`;
   }
+
 
 
   private nextId = 1;

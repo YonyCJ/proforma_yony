@@ -240,6 +240,7 @@
 .preview-client {
   /* Ya está alineado a la izquierda por defecto */
   font-size: 14px;
+  color: #8a8a8a;
 }
 
 .preview-seller {
@@ -248,13 +249,16 @@
   /* Opcional: ancho máximo si no quieres que ocupe mucho espacio */
   max-width: 50%; /* Ajusta según necesites */
   font-size: 14px;
+  color: #8a8a8a;
 }
 
 /* Estilos para títulos y párrafos (igual que antes) */
 .preview-client h4, .preview-seller h4 {
   margin-top: 0;
   margin-bottom: 5px;
-  color: #495057;
+  color: #000000;
+  font-weight: bold !important;
+  font-size: 16px;
 }
 
 .preview-client p, .preview-seller p {
@@ -528,5 +532,29 @@ input[type="number"] {
   .preview-header-right {
     position: relative;
     top: 20px; /* Mantiene el desplazamiento hacia abajo como en desktop */
+  }
+}
+
+/*MARGENES*/
+
+.pdf-export-only {
+  margin: 0.5cm 1.5cm 0.5cm 1.5cm !important;
+  /* Orden: top right bottom left */
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin-top: 0.5cm;
+    margin-bottom: 0.5cm;
+    margin-left: 1.5cm;
+    margin-right: 1.5cm;
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }

@@ -272,6 +272,7 @@
   padding: 10px;
   text-align: left;
   border: 1px solid #ddd;
+  font-size: 14px;
 }
 
 .preview-table th {
@@ -282,7 +283,7 @@
 .preview-totals {
   text-align: right;
   padding: 15px;
-  background-color: #f8f9fa;
+  /*background-color: #f8f9fa;*/
   border-radius: 4px;
 }
 
@@ -290,6 +291,7 @@
   margin: 5px 0;
   font-size: 16px;
 }
+
 
 @media (max-width: 768px) {
   .info-section {

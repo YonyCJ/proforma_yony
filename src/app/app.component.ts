@@ -314,13 +314,56 @@ export class AppComponent {
     };
 
     const elementRef = element as HTMLElement;
-    elementRef.style.display = 'block'; // mostrar el contenido temporalmente
+    elementRef.style.display = 'block';
 
-    html2pdf().set(opt).from(elementRef).outputPdf('bloburl').then((url: string) => {
-      window.open(url, '_blank'); // abre en nueva pestaña
-      elementRef.style.display = 'none'; // volver a ocultarlo
+    html2pdf()
+      .set(opt)
+      .from(elementRef)
+      .toPdf()
+      .get('pdf')
+      .then(async (pdf: any) => {
+        const totalPages = pdf.internal.getNumberOfPages();
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        // Carga imagen como base64
+        const imageBase64 = await this.loadImageAsBase64('assets/img/circu.png');
+
+        const imgWidth = 4; // pulgadas (ajusta según necesites)
+        const imgHeight = 4;
+
+        const x = (pageWidth - imgWidth) / 2;
+        const y = (pageHeight - imgHeight) / 2;
+
+        for (let i = 1; i <= totalPages; i++) {
+          pdf.setPage(i);
+
+          // Opcional: reducir opacidad
+          pdf.setGState?.(new pdf.GState({ opacity: 0.1 }));
+
+          pdf.addImage(imageBase64, 'PNG', x, y, imgWidth, imgHeight);
+        }
+      })
+      .outputPdf('bloburl')
+      .then((url: string) => {
+        window.open(url, '_blank');
+        elementRef.style.display = 'none';
+      });
+  }
+
+  loadImageAsBase64(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      fetch(url)
+        .then(res => res.blob())
+        .then(blob => {
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
     });
   }
+
 
 
 

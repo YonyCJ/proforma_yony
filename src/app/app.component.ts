@@ -78,10 +78,13 @@ export class AppComponent {
   showPreview = false;
   currentDate = new Date().toLocaleDateString('es-ES');
 
+  validityText = '';
+
   // Datos de la proforma
   proformaData = {
     number: '',
-    date: new Date().toISOString().split('T')[0] // Fecha actual por defecto
+    date: new Date().toISOString().split('T')[0], // Fecha actual por defecto
+    validityDays: 0
   };
 
   initializeDefaultData() {
@@ -361,6 +364,30 @@ export class AppComponent {
   }
 
 
+  updateValidityText() {
+    if (!this.proformaData.validityDays || this.proformaData.validityDays <= 0) {
+      this.validityText = 'Sin días de validez definidos';
+      return;
+    }
+
+    // Formatear la fecha de vencimiento
+    if (this.proformaData.date) {
+      const validityDate = new Date(this.proformaData.date);
+      validityDate.setDate(validityDate.getDate() + this.proformaData.validityDays);
+
+      const formattedDate = validityDate.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      // this.validityText = `Válido por ${this.proformaData.validityDays} día(s) hasta el ${formattedDate}`;
+      this.validityText = `Válido por ${this.proformaData.validityDays} días`;
+    } else {
+      // this.validityText = `Válido por ${this.proformaData.validityDays} día(s) a partir de la fecha de emisión`;
+      this.validityText = `Válido por ${this.proformaData.validityDays} días`;
+    }
+  }
 
 
 

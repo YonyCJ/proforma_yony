@@ -185,8 +185,24 @@
 }
 
 .pdf-buttons {
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* Alineación por defecto (izquierda) */
+  gap: 10px; /* Espacio entre botones */
   margin-bottom: 30px;
+}
+
+/* Estilos para móvil (generalmente < 768px) */
+@media (max-width: 767px) {
+  .pdf-buttons {
+    justify-content: space-between; /* Uno a cada lado */
+  }
+
+  /* Opcional: asegurar que los botones ocupen el mismo ancho */
+  .pdf-buttons button {
+    flex: 1;
+    min-width: 120px; /* Ancho mínimo para que no se vean muy pequeños */
+  }
 }
 
 .btn-preview, .btn-generate {
@@ -277,12 +293,13 @@
   padding: 10px;
   text-align: left;
   border: 1px solid #ddd;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .preview-table th {
   background-color: #f8f9fa;
   font-weight: bold;
+  text-align: center;
 }
 
 .preview-totals {

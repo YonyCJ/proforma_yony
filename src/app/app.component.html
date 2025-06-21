@@ -18,6 +18,14 @@
                id="proformaDate"
                type="date">
       </div>
+      <div class="form-field">
+        <label for="validityDays">Días de validez:</label>
+        <input [(ngModel)]="proformaData.validityDays"
+               id="validityDays"
+               type="number"
+               min="1"
+               (input)="updateValidityText()">
+      </div>
     </div>
   </div>
 
@@ -139,8 +147,8 @@
 
   <!-- Botones de PDF -->
   <div class="pdf-buttons" *ngIf="products.length > 0">
-    <button (click)="previewPDF()" class="btn-preview">Vista Previa del PDF</button>
-    <button (click)="generatePDF()" class="btn-generate">Generar PDF</button>
+    <button (click)="previewPDF()" class="btn-preview">VISTA PREVIA</button>
+    <button (click)="generatePDF()" class="btn-generate">DESCARGAR PDF</button>
   </div>
 
   <!-- Vista previa del PDF -->
@@ -204,7 +212,7 @@
         </div>
 
         <div class="validity-text">
-          * Tres días de validez
+          * {{validityText}}
         </div>
 
         <div class="preview-totals">
@@ -281,7 +289,7 @@
         </tbody>
       </table>
       <div class="validity-text">
-        * Tres días de validez
+        * {{validityText}}
       </div>
 
       <div class="preview-totals">

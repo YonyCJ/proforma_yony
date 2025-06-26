@@ -575,3 +575,110 @@ input[type="number"] {
     padding: 0 !important;
   }
 }
+
+
+/* Estilo para la celda seleccionada */
+.products-table td.selected {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+}
+
+/* Estilo para la celda por defecto (1%) cuando no hay selección */
+.products-table td.default {
+  background-color: #FFC107;
+  color: black;
+  font-weight: bold;
+}
+
+/* Hover effect para las celdas clickeables */
+.products-table td[title]:hover {
+  background-color: #43b99e;
+  cursor: pointer;
+}
+
+
+
+/* Estilos para campos editables */
+.editable-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #43b99e;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.editable-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.editable-input:hover {
+  border-color: #43b99e;
+}
+
+/* Estilos específicos para inputs numéricos */
+.number-input {
+  width: 50px;
+  text-align: center;
+}
+
+.price-input {
+  width: 50px;
+  text-align: right;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.tooltip-container {
+  position: relative;
+
+  &:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 80%;
+  left: 10%;
+  transform: translateX(-50%);
+  background-color: #ffda00;
+  color: #000000;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+  }
+}

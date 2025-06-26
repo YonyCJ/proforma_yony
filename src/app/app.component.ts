@@ -10,8 +10,8 @@ interface Product {
   name: string;
   quantity: number;
   purchasePrice: number;
-  salePrice: number;
   calculatedPrices: number[];
+  selectedPercentageIndex?: number;
   totalPrices: number[];
 }
 
@@ -45,8 +45,7 @@ export class AppComponent {
   newProduct = {
     name: '',
     quantity: 0,
-    purchasePrice: 0,
-    salePrice: 0
+    purchasePrice: 0
   };
 
   client: Client = {
@@ -73,7 +72,8 @@ export class AppComponent {
   totalProfit = 0;
   totalInvestment = 0;
   totalSale = 0;
-  totalProfitWithIVA = 0;
+  transportCost: number = 0;
+  transportText: string = '';
 
   showPreview = false;
   currentDate = new Date().toLocaleDateString('es-ES');
@@ -84,8 +84,17 @@ export class AppComponent {
   proformaData = {
     number: '',
     date: new Date().toISOString().split('T')[0], // Fecha actual por defecto
-    validityDays: 0
+    validityDays: 0,
+    transport: 0
   };
+
+  // Al crear o cargar productos, asegúrate de que no tengan selección inicial
+  initializeProducts() {
+    this.products = this.products.map(product => ({
+      ...product,
+      selectedPercentageIndex: undefined
+    }));
+  }
 
   initializeDefaultData() {
     // Inicializar con fecha actual
@@ -103,7 +112,7 @@ export class AppComponent {
 
   addProduct() {
     if (!this.newProduct.name || this.newProduct.quantity <= 0 ||
-      this.newProduct.purchasePrice <= 0 || this.newProduct.salePrice <= 0) {
+      this.newProduct.purchasePrice <= 0) {
       alert('Por favor completa todos los campos correctamente');
       return;
     }
@@ -113,15 +122,16 @@ export class AppComponent {
       name: this.newProduct.name,
       quantity: this.newProduct.quantity,
       purchasePrice: this.newProduct.purchasePrice,
-      salePrice: this.newProduct.salePrice,
       calculatedPrices: [],
       totalPrices: []
     };
 
     // Calcular precios con diferentes porcentajes (ya incluyen IVA)
     this.percentages.forEach(percentage => {
-      const priceWithPercentage = this.newProduct.salePrice * percentage;
-      const roundedPrice = +(priceWithPercentage.toFixed(2));
+      const priceWithPercentage = (this.newProduct.purchasePrice * percentage) * this.newProduct.quantity;
+      const priceFinal = priceWithPercentage - (this.newProduct.purchasePrice * this.newProduct.quantity);
+      const roundedPrice = +(priceFinal.toFixed(2));
+      // console.log('Precio redondeado:', roundedPrice);
 
       // Calculamos el subtotal para este porcentaje
       const subtotal = roundedPrice * this.newProduct.quantity;
@@ -141,39 +151,54 @@ export class AppComponent {
     this.calculateProfit();
   }
 
-  selectPercentage(index: number) {
-    this.selectedPercentageIndex = index;
+  selectPercentage(productIndex: number, percentageIndex: number) {
+    // Actualizar solo el producto específico
+    this.products[productIndex].selectedPercentageIndex = percentageIndex;
+
+    // Si necesitas calcular ganancias por producto específico
+    this.calculateProfitForProduct(productIndex);
+    // Recalcular ganancias totales automáticamente
     this.calculateProfit();
   }
 
-  calculateProfit() {
-    if (this.products.length === 0) {
-      this.totalProfit = 0;
-      this.totalInvestment = 0;
-      this.totalSale = 0;
-      return;
+  calculateProfitForProduct(productIndex: number) {
+    const product = this.products[productIndex];
+    if (product.selectedPercentageIndex !== undefined) {
+      // Tu lógica de cálculo de ganancia para este producto específico
+      const selectedPrice = product.calculatedPrices[product.selectedPercentageIndex];
+      // ... resto de tu lógica
     }
+  }
 
-    this.totalInvestment = this.products.reduce((sum, product) =>
-      sum + (product.purchasePrice * product.quantity), 0);
+  calculateProfit() {
+    this.totalInvestment = 0;
+    this.totalSale = 0;
+    this.totalProfit = 0;
 
-    this.totalSale = this.products.reduce((sum, product) =>
-      sum + product.totalPrices[this.selectedPercentageIndex], 0);
+    this.products.forEach((product, index) => {
+      const investment = product.purchasePrice * product.quantity;
 
+      // Si no hay selección, usar 1% (índice 0)
+      const selectedIndex = product.selectedPercentageIndex !== undefined
+        ? product.selectedPercentageIndex
+        : 0; // Índice 0 corresponde al 1%
+
+      // Calcular precio de venta usando el porcentaje seleccionado
+      const selectedPercentage = this.percentages[selectedIndex];
+      const salePrice = product.purchasePrice * (1 + selectedPercentage);
+      const sale = salePrice * product.quantity;
+
+      this.totalInvestment += investment;
+      this.totalSale += sale;
+    });
+
+    // Calcular ganancia total
     this.totalProfit = this.totalSale - this.totalInvestment;
   }
 
 
-  /*profitWithoutIVA() {
-    totalProfitWithIVA = ((this.calculateProfit()-this.getIVA())- (this.totalProfit/this.IVA_FACTOR));
-  }*/
-
-  // Versión modificada de profitWithoutIVA() que funciona con tu calculateProfit() actual
   profitWithoutIVA(): number {
-    this.calculateProfit();
-    const ivaAmount = this.totalSale - this.getIVA();
-    const profitWithoutIVA = ivaAmount - (this.totalInvestment / this.IVA_FACTOR);
-    return Number(profitWithoutIVA.toFixed(2)); // Retorna como número con 2 decimales
+    return this.totalProfit / 1.15;
   }
 
   getSubtotal(): number {
@@ -183,7 +208,7 @@ export class AppComponent {
   }
 
   // Si necesitas el subtotal SIN IVA (opcional)
-  getSubtotalWithoutIVA(): number {
+  /*getSubtotalWithoutIVA(): number {
     return this.getSubtotal() / this.IVA_FACTOR;
   }
 
@@ -193,7 +218,7 @@ export class AppComponent {
 
   getTotal(): number {
     return this.getSubtotalWithoutIVA() + this.getIVA();
-  }
+  }*/
 
   previewPDF() {
     if (this.products.length === 0) {
@@ -203,95 +228,11 @@ export class AppComponent {
     this.showPreview = !this.showPreview;
   }
 
-  /*generatePDF() {
-    if (this.products.length === 0) {
-      alert('No hay productos para generar el PDF');
-      return;
-    }
-
-    const doc = new jsPDF();
-
-    // Título
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text('PROFORMA', 105, 20, { align: 'center' });
-
-    // Fecha
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Fecha: ${this.currentDate}`, 20, 35);
-
-    // Información del cliente
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('CLIENTE:', 20, 50);
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(this.client.name || 'N/A', 20, 60);
-    doc.text(this.client.document || 'N/A', 20, 70);
-    doc.text(this.client.address || 'N/A', 20, 80);
-    // doc.text(this.client.phone || 'N/A', 20, 90);
-    doc.text(this.client.email || 'N/A', 20, 100);
-
-    // Información del vendedor
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('VENDEDOR:', 120, 50);
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(this.seller.name || 'N/A', 120, 60);
-    doc.text(this.seller.document || 'N/A', 120, 70);
-    doc.text(this.seller.address || 'N/A', 120, 80);
-    // doc.text(this.seller.phone || 'N/A', 120, 90);
-    doc.text(this.seller.email || 'N/A', 120, 100);
-
-    // Tabla de productos
-    const tableData = this.products.map(product => [
-      product.name,
-      product.quantity.toString(),
-      `$${product.calculatedPrices[this.selectedPercentageIndex].toFixed(2)}`,
-      `$${product.totalPrices[this.selectedPercentageIndex].toFixed(2)}`
-    ]);
-
-    (doc as any).autoTable({
-      head: [['Producto', 'Cantidad', 'Precio Unit.', 'Subtotal']],
-      body: tableData,
-      startY: 120,
-      styles: {
-        fontSize: 10,
-        cellPadding: 5
-      },
-      headStyles: {
-        fillColor: [52, 58, 64],
-        textColor: 255,
-        fontStyle: 'bold'
-      }
-    });
-
-    // Totales
-    const finalY = (doc as any).lastAutoTable.finalY + 20;
-    const subtotal = this.getSubtotal();
-    const iva = this.getIVA();
-    const total = this.getTotal();
-
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`Subtotal: $${subtotal.toFixed(2)}`, 140, finalY);
-    doc.text(`IVA (15%): $${iva.toFixed(2)}`, 140, finalY + 10);
-    doc.text(`Total: $${total.toFixed(2)}`, 140, finalY + 20);
-
-    // Guardar el PDF
-    doc.save(`Proforma_${this.currentDate.replace(/\//g, '-')}.pdf`);
-  }*/
-
-
-
   private resetNewProduct() {
     this.newProduct = {
       name: '',
       quantity: 0,
-      purchasePrice: 0,
-      salePrice: 0
+      purchasePrice: 0
     };
   }
 
@@ -389,12 +330,183 @@ export class AppComponent {
     }
   }
 
+  // Calcular transporte
+  getTransport(): number {
+    return this.proformaData?.transport || 0;
+  }
+
+  updateTransportText() {
+    if (!this.transportCost || this.transportCost <= 0) {
+      this.transportText = 'Sin costo de transporte definido';
+    } else {
+      this.transportText = `Costo de transporte: $${this.transportCost.toFixed(2)}`;
+    }
+  }
+
 
   toUpperCaseOnly(value: string): string {
     return value.toUpperCase().replace(/[^A-Z\s]/g, ''); // Solo letras mayúsculas y espacios
   }
 
 
+
+  updateProduct(index: number) {
+    const product = this.products[index];
+
+    // Validaciones básicas
+    if (!product.name || product.name.trim() === '') {
+      alert('El nombre del producto no puede estar vacío');
+      return;
+    }
+
+    if (product.quantity <= 0) {
+      alert('La cantidad debe ser mayor a 0');
+      product.quantity = 1; // Valor por defecto
+      return;
+    }
+
+    if (product.purchasePrice <= 0) {
+      alert('El precio de compra debe ser mayor a 0');
+      product.purchasePrice = 0.01; // Valor por defecto
+      return;
+    }
+
+    // Limpiar el nombre (quitar espacios extra)
+    product.name = product.name.trim();
+
+    // Recalcular precios y ganancias para este producto
+    this.recalculateProductPrices(index);
+
+    // Recalcular totales
+    this.calculateProfit();
+  }
+
+  recalculateProductPrices(index: number) {
+    const product = this.products[index];
+
+    // Limpiar arrays existentes
+    product.calculatedPrices = [];
+    product.totalPrices = [];
+
+    // Recalcular ganancias con todos los porcentajes
+    this.percentages.forEach(percentage => {
+      // Precio de venta = precio compra * (1 + porcentaje)
+      const salePrice = (product.purchasePrice * percentage) * product.quantity;
+      // Ganancia unitaria = precio venta - precio compra
+      const priceQuantity = product.purchasePrice * product.quantity
+      const unitProfit = salePrice  - priceQuantity;
+      const roundedProfit = +(unitProfit.toFixed(2));
+      // console.log('Precio de venta:', salePrice);
+
+      // Ganancia total = ganancia unitaria * cantidad
+      const totalProfit = roundedProfit * product.quantity;
+
+
+      product.calculatedPrices.push(roundedProfit);  // Ganancia unitaria
+      product.totalPrices.push(totalProfit);         // Ganancia total
+    });
+  }
+
+  // Método para detectar cambios en tiempo real (opcional)
+  onProductNameChange(index: number) {
+    // Solo validar longitud, no recalcular precios hasta que termine de escribir
+    const product = this.products[index];
+    if (product.name && product.name.length > 50) {
+      product.name = product.name.substring(0, 50);
+    }
+  }
+
+  onProductQuantityChange(index: number) {
+    const product = this.products[index];
+
+    // Validar que sea un número positivo
+    if (product.quantity < 1) {
+      product.quantity = 1;
+    }
+
+    // Recalcular solo si el valor es válido
+    if (product.quantity > 0 && product.purchasePrice > 0) {
+      this.recalculateProductPrices(index);
+      this.calculateProfit();
+    }
+  }
+
+  onProductPriceChange(index: number) {
+    const product = this.products[index];
+
+    // Validar que sea un precio válido
+    if (product.purchasePrice < 0) {
+      product.purchasePrice = 0;
+    }
+
+    // Recalcular solo si el valor es válido
+    if (product.quantity > 0 && product.purchasePrice > 0) {
+      this.recalculateProductPrices(index);
+      this.calculateProfit();
+    }
+  }
+
+// Método para formatear el precio mientras el usuario escribe
+  formatPrice(index: number) {
+    const product = this.products[index];
+    product.purchasePrice = +product.purchasePrice.toFixed(2);
+  }
+
+
+  // Obtener el precio unitario de venta (sin IVA) para un producto específico
+  getProductUnitPrice(product: any): number {
+    // Si no hay selección, usar 1% (índice 0)
+    const selectedIndex = product.selectedPercentageIndex !== undefined
+      ? product.selectedPercentageIndex
+      : 0;
+
+    // Calcular precio de venta con el porcentaje seleccionado
+    const selectedPercentage = this.percentages[selectedIndex];
+    const salePrice = product.purchasePrice * (selectedPercentage);
+
+    // Retornar precio sin IVA
+    return salePrice / this.IVA_FACTOR;
+  }
+
+
+  // Obtener el total para un producto específico (sin IVA)
+  getProductTotal(product: any): number {
+    const unitPrice = this.getProductUnitPrice(product);
+    return unitPrice * product.quantity;
+  }
+
+  // Calcular subtotal sin IVA de todos los productos
+  getSubtotalWithoutIVA(): number {
+    return this.products.reduce((subtotal, product) => {
+      return subtotal + this.getProductTotal(product);
+    }, 0);
+  }
+
+// Calcular el IVA (15%)
+  getIVA(): number {
+    return this.getSubtotalWithoutIVA() * 0.15;
+  }
+
+// Calcular el total con IVA
+  getTotal(): number {
+    return this.getSubtotalWithoutIVA() + this.getIVA() + this.getTransport();
+  }
+
+// Método alternativo si quieres mostrar el precio con IVA incluido
+  getProductUnitPriceWithIVA(product: any): number {
+    const selectedIndex = product.selectedPercentageIndex !== undefined
+      ? product.selectedPercentageIndex
+      : 0;
+
+    const selectedPercentage = this.percentages[selectedIndex];
+    return product.purchasePrice * (1 + selectedPercentage);
+  }
+
+// Método alternativo para el total con IVA incluido
+  getProductTotalWithIVA(product: any): number {
+    const unitPriceWithIVA = this.getProductUnitPriceWithIVA(product);
+    return unitPriceWithIVA * product.quantity;
+  }
 
 
 

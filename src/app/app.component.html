@@ -26,6 +26,15 @@
                min="1"
                (input)="updateValidityText()">
       </div>
+      <div class="form-field">
+        <label for="transport">Costo de Transporte:</label>
+        <input [(ngModel)]="proformaData.transport"
+               id="transport"
+               type="number"
+               min="1"
+               (input)="updateTransportText()">
+      </div>
+
     </div>
   </div>
 
@@ -34,8 +43,10 @@
     <div class="client-info">
       <h3>Datos del Cliente</h3>
       <div class="form-grid">
-        <input [(ngModel)]="client.name" placeholder="Nombre del cliente" (ngModelChange)="client.name = toUpperCaseOnly($event)">
-        <input [(ngModel)]="client.document" placeholder="Documento" (ngModelChange)="client.document = toUpperCaseOnly($event)">
+        <input [(ngModel)]="client.name" placeholder="Nombre del cliente"
+               (ngModelChange)="client.name = toUpperCaseOnly($event)">
+        <input [(ngModel)]="client.document" placeholder="Documento"
+               (ngModelChange)="client.document = toUpperCaseOnly($event)">
         <input [(ngModel)]="client.address" placeholder="Dirección">
         <input [(ngModel)]="client.email" placeholder="Email">
       </div>
@@ -44,7 +55,8 @@
     <div class="seller-info">
       <h3>Datos del Vendedor</h3>
       <div class="form-grid">
-        <input [(ngModel)]="seller.name" placeholder="Nombre del vendedor" (ngModelChange)="seller.name = toUpperCaseOnly($event)">
+        <input [(ngModel)]="seller.name" placeholder="Nombre del vendedor"
+               (ngModelChange)="seller.name = toUpperCaseOnly($event)">
         <input [(ngModel)]="seller.document" placeholder="Documento">
         <input [(ngModel)]="seller.address" placeholder="Dirección">
         <input [(ngModel)]="seller.email" placeholder="Email">
@@ -66,11 +78,7 @@
       </div>
       <div class="form-group">
         <input [(ngModel)]="newProduct.purchasePrice" type="number" step="0.01" required>
-        <label>Precio de compra</label>
-      </div>
-      <div class="form-group">
-        <input [(ngModel)]="newProduct.salePrice" type="number" step="0.01" required>
-        <label>Precio de venta base</label>
+        <label>Precio real</label>
       </div>
       <button (click)="addProduct()" class="btn-add">Agregar Producto</button>
     </div>
@@ -84,31 +92,72 @@
       <tr>
         <th>Producto</th>
         <th>Cantidad</th>
-        <th>Precio Compra</th>
-        <th>Precio Venta Base</th>
-        <th>+1%</th>
-        <th>+1.05%</th>
-        <th>+1.1%</th>
-        <th>+1.15%</th>
-        <th>+1.2%</th>
-        <th>+1.25%</th>
-        <th>+1.3%</th>
-        <th>+1.35%</th>
-        <th>+1.5%</th>
+        <th>Precio Real</th>
+        <th>+1% Ganancia</th>
+        <th>+5% Ganancia</th>
+        <th>+10% Ganancia</th>
+        <th>+15% Ganancia</th>
+        <th>+20% Ganancia</th>
+        <th>+25% Ganancia</th>
+        <th>+30% Ganancia</th>
+        <th>+35% Ganancia</th>
+        <th>+50% Ganancia</th>
         <th>Acciones</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let product of products; let i = index">
-        <td>{{ product.name }}</td>
-        <td>{{ product.quantity }}</td>
-        <td>${{ product.purchasePrice.toFixed(2) }}</td>
-        <td>${{ product.salePrice.toFixed(2) }}</td>
-        <td *ngFor="let price of product.calculatedPrices; let j = index"
-            [class.selected]="selectedPercentageIndex === j"
-            (click)="selectPercentage(j)">
-          ${{ price | number:'1.2-2'}}
+        <!-- Campo editable para el nombre del producto -->
+        <!-- Versión con actualización en tiempo real -->
+        <td>
+          <input
+            type="text"
+            [(ngModel)]="product.name"
+            (input)="onProductNameChange(i)"
+            (blur)="updateProduct(i)"
+            (keyup.enter)="updateProduct(i)"
+            class="editable-input"
+            placeholder="Nombre del producto">
         </td>
+
+        <td>
+          <input
+            type="number"
+            [(ngModel)]="product.quantity"
+            (input)="onProductQuantityChange(i)"
+            (blur)="updateProduct(i)"
+            min="1"
+            class="editable-input number-input"
+            placeholder="Cantidad">
+        </td>
+
+        <td>
+          <input
+            type="number"
+            [(ngModel)]="product.purchasePrice"
+            (input)="onProductPriceChange(i)"
+            (blur)="formatPrice(i)"
+            min="0"
+            step="0.01"
+            class="editable-input price-input"
+            placeholder="0.00">
+        </td>
+
+        <!-- Celdas de ganancias (no editables) -->
+        <td *ngFor="let profit of product.calculatedPrices; let j = index"
+            [class.selected]="product.selectedPercentageIndex === j"
+            [class.default]="product.selectedPercentageIndex === undefined && j === 0"
+            (click)="selectPercentage(i, j)"
+            class="profit-cell tooltip-container"
+            [attr.data-tooltip]="'Precio venta: $' + (profit + (product.purchasePrice * product.quantity)).toFixed(2)"
+        >
+          ${{ profit | number:'1.2-2' }}
+
+          <span class="tooltip">
+            Precio venta: ${{ (profit + (product.purchasePrice * product.quantity)).toFixed(2) }}
+          </span>
+        </td>
+
         <td>
           <button (click)="removeProduct(i)" class="btn-remove">Eliminar</button>
         </td>
@@ -120,28 +169,12 @@
   <!-- Selector de porcentaje para ganancia -->
   <div class="profit-section">
     <h3>Calcular Ganancia</h3>
-    <!--<div class="percentage-selector">
-      <label>Seleccionar porcentaje de venta:</label>
-      <select [(ngModel)]="selectedPercentageIndex" (change)="calculateProfit()">
-        <option value="0">+1%</option>
-        <option value="1">+1.05%</option>
-        <option value="2">+1.1%</option>
-        <option value="3">+1.15%</option>
-        <option value="4">+1.2%</option>
-        <option value="5">+1.25%</option>
-        <option value="6">+1.3%</option>
-        <option value="7">+1.35%</option>
-        <option value="8">+1.5%</option>
-      </select>
-    </div>-->
-
     <div class="profit-display" *ngIf="totalProfit > 0">
       <h4>Resumen de Ganancias (con IVA 15%)</h4>
       <p><strong>Total Inversión:</strong> ${{ totalInvestment.toFixed(2) }}</p>
-      <p><strong>Total Venta:</strong> ${{ totalSale.toFixed(2) }}</p>
       <p><strong>Ganancia Total Con IVA:</strong> ${{ totalProfit.toFixed(2) }}</p>
       <p><strong>Ganancia Total Sin IVA:</strong> ${{ profitWithoutIVA().toFixed(2) }}</p>
-      <p><strong>Diezmo:</strong> {{ (profitWithoutIVA() * 0.1).toFixed(2) }}</p>
+      <p><strong>Diezmo:</strong> ${{ (profitWithoutIVA() * 0.1).toFixed(2) }}</p>
     </div>
   </div>
 
@@ -201,35 +234,32 @@
             </thead>
             <tbody>
             <tr *ngFor="let product of products; let i = index">
-              <td>{{ i+1 }}</td>
+              <td>{{ i + 1 }}</td>
               <td>{{ product.quantity }}</td>
               <td>{{ product.name }}</td>
-              <td>${{ (product.calculatedPrices[selectedPercentageIndex] / IVA_FACTOR).toFixed(2) }}</td>
-              <td>${{ (product.totalPrices[selectedPercentageIndex]/ IVA_FACTOR).toFixed(2) }}</td>
+              <td>${{ getProductUnitPrice(product).toFixed(2) }}</td>
+              <td>${{ getProductTotal(product).toFixed(2) }}</td>
             </tr>
             </tbody>
           </table>
         </div>
 
         <div class="validity-text">
-          * {{validityText}}
+          * {{ validityText }}
         </div>
 
         <div class="preview-totals">
           <p><strong>SUBTOTAL SIN IVA:</strong> ${{ getSubtotalWithoutIVA().toFixed(2) }}</p>
           <p><strong>15% IVA:</strong> ${{ getIVA().toFixed(2) }}</p>
+          <p><strong>TRANSPORTE:</strong> ${{ getTransport().toFixed(2) }}</p>
           <p><strong>TOTAL:</strong> ${{ getTotal().toFixed(2) }}</p>
         </div>
       </div>
     </div>
   </div>
+
+
 </div>
-
-
-
-
-
-
 
 
 <!-- CONTENIDO SOLO PARA EXPORTACIÓN A PDF (oculto al usuario) -->
@@ -280,21 +310,22 @@
         </thead>
         <tbody>
         <tr *ngFor="let product of products; let i = index">
-          <td>{{ i+1 }}</td>
+          <td>{{ i + 1 }}</td>
           <td>{{ product.quantity }}</td>
           <td>{{ product.name }}</td>
-          <td>${{ (product.calculatedPrices[selectedPercentageIndex] / IVA_FACTOR).toFixed(2) }}</td>
-          <td>${{ (product.totalPrices[selectedPercentageIndex]/ IVA_FACTOR).toFixed(2) }}</td>
+          <td>${{ getProductUnitPrice(product).toFixed(2) }}</td>
+          <td>${{ getProductTotal(product).toFixed(2) }}</td>
         </tr>
         </tbody>
       </table>
       <div class="validity-text">
-        * {{validityText}}
+        * {{ validityText }}
       </div>
 
       <div class="preview-totals">
         <p><strong>SUBTOTAL SIN IVA:</strong> ${{ getSubtotalWithoutIVA().toFixed(2) }}</p>
         <p><strong>15% IVA:</strong> ${{ getIVA().toFixed(2) }}</p>
+        <p><strong>TRANSPORTE:</strong> ${{ getTransport().toFixed(2) }}</p>
         <p><strong>TOTAL:</strong> ${{ getTotal().toFixed(2) }}</p>
       </div>
     </div>

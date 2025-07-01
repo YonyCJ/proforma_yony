@@ -80,6 +80,19 @@
         <input [(ngModel)]="newProduct.purchasePrice" type="number" step="0.01" required>
         <label>Precio real</label>
       </div>
+      <!-- NUEVO CAMPO PARA IMAGEN -->
+      <div class="form-group">
+        <input type="file"
+               (change)="onImageSelected($event)"
+               accept="image/*"
+               #imageInput>
+        <label>Imagen del producto</label>
+      </div>
+      <!-- PREVIEW DE LA IMAGEN SELECCIONADA -->
+      <div class="image-preview" *ngIf="selectedImagePreview">
+        <img [src]="selectedImagePreview" alt="Preview" class="preview-img">
+        <button type="button" (click)="clearSelectedImage()" class="btn-clear-image">×</button>
+      </div>
       <button (click)="addProduct()" class="btn-add">Agregar Producto</button>
     </div>
   </div>
@@ -102,6 +115,7 @@
         <th>+30% Ganancia</th>
         <th>+35% Ganancia</th>
         <th>+50% Ganancia</th>
+        <th>Imagen</th>
         <th>Acciones</th>
       </tr>
       </thead>
@@ -156,6 +170,32 @@
           <span class="tooltip">
             Precio venta: ${{ (profit + (product.purchasePrice * product.quantity)).toFixed(2) }}
           </span>
+        </td>
+
+        <!-- NUEVA COLUMNA PARA IMAGEN -->
+        <td class="image-cell">
+          <div class="product-image-container" *ngIf="product.imageUrl">
+            <img [src]="product.imageUrl"
+                 alt="Imagen producto"
+                 class="product-image clickable-image"
+                 (click)="openImageSelector(i)"
+                 title="Clic para cambiar imagen">
+            <button type="button" (click)="removeProductImage(i)" class="btn-remove-image">×</button>
+          </div>
+          <div class="no-image" *ngIf="!product.imageUrl">
+            <div class="upload-area" (click)="openImageSelector(i)">
+              <span class="upload-icon">📷</span>
+              <span class="no-image-text">Agregar imagen</span>
+            </div>
+          </div>
+          <!-- Input file oculto para cada producto -->
+          <input type="file"
+                 #fileInput
+                 (change)="onProductImageChange($event, i)"
+                 accept="image/*"
+                 class="hidden-file-input"
+                 [id]="'fileInput-' + i"
+                 style="display: none">
         </td>
 
         <td>
@@ -236,7 +276,16 @@
             <tr *ngFor="let product of products; let i = index">
               <td>{{ i + 1 }}</td>
               <td>{{ product.quantity }}</td>
-              <td>{{ product.name }}</td>
+              <td class="description-cell">
+                <div class="description-content">
+                  <span class="product-name">{{ product.name }}</span>
+                  <!-- IMAGEN EN LA DESCRIPCIÓN -->
+                  <div class="product-image-preview" *ngIf="product.imageUrl">
+                    <span class="image-label">IMAGEN REFERENCIAL</span>
+                    <img [src]="product.imageUrl" alt="Imagen referencial" class="reference-image">
+                  </div>
+                </div>
+              </td>
               <td>${{ getProductUnitPrice(product).toFixed(2) }}</td>
               <td>${{ getProductTotal(product).toFixed(2) }}</td>
             </tr>
@@ -312,7 +361,16 @@
         <tr *ngFor="let product of products; let i = index">
           <td>{{ i + 1 }}</td>
           <td>{{ product.quantity }}</td>
-          <td>{{ product.name }}</td>
+          <td class="description-cell">
+            <div class="description-content">
+              <span class="product-name">{{ product.name }}</span>
+              <!-- IMAGEN EN LA DESCRIPCIÓN PARA PDF -->
+              <div class="product-image-preview" *ngIf="product.imageUrl">
+                <span class="image-label">IMAGEN REFERENCIAL</span>
+                <img [src]="product.imageUrl" alt="Imagen referencial" class="reference-image">
+              </div>
+            </div>
+          </td>
           <td>${{ getProductUnitPrice(product).toFixed(2) }}</td>
           <td>${{ getProductTotal(product).toFixed(2) }}</td>
         </tr>

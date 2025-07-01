@@ -10,6 +10,7 @@ interface Product {
   name: string;
   quantity: number;
   purchasePrice: number;
+  imageUrl?: string | null;
   calculatedPrices: number[];
   selectedPercentageIndex?: number;
   totalPrices: number[];
@@ -74,6 +75,8 @@ export class AppComponent {
   totalSale = 0;
   transportCost: number = 0;
   transportText: string = '';
+  selectedImagePreview: string | null = null;
+  private selectedImageFile: File | null = null;
 
   showPreview = false;
   currentDate = new Date().toLocaleDateString('es-ES');
@@ -122,10 +125,11 @@ export class AppComponent {
       name: this.newProduct.name,
       quantity: this.newProduct.quantity,
       purchasePrice: this.newProduct.purchasePrice,
+      imageUrl: this.selectedImagePreview,
       calculatedPrices: [],
       totalPrices: []
     };
-
+    this.clearSelectedImage();
     // Calcular precios con diferentes porcentajes (ya incluyen IVA)
     this.percentages.forEach(percentage => {
       const priceWithPercentage = (this.newProduct.purchasePrice * percentage) * this.newProduct.quantity;
@@ -508,6 +512,52 @@ export class AppComponent {
     return unitPriceWithIVA * product.quantity;
   }
 
+
+
+  // Método para manejar la selección de imagen en el formulario de agregar producto
+  onImageSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedImageFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedImagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+// Método para limpiar la imagen seleccionada
+  clearSelectedImage(): void {
+    this.selectedImagePreview = null;
+    this.selectedImageFile = null;
+  }
+
+// Método para manejar el cambio de imagen en productos existentes
+  onProductImageChange(event: any, productIndex: number): void {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.products[productIndex].imageUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+// Método para remover imagen de un producto
+  removeProductImage(productIndex: number): void {
+    this.products[productIndex].imageUrl = null;
+  }
+
+
+  // Método para abrir selector de imagen
+  openImageSelector(productIndex: number): void {
+    const fileInput = document.getElementById(`fileInput-${productIndex}`) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
 
 
 }

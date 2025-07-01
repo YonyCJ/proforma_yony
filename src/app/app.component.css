@@ -682,3 +682,158 @@ input[type="number"] {
     border-top-color: #333;
   }
 }
+
+
+/* Estilos para el preview de imagen en el formulario */
+.image-preview {
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.preview-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+}
+
+.btn-clear-image {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos para la tabla de productos */
+.image-cell {
+  width: 100px;
+  text-align: center;
+}
+
+.product-image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.product-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.btn-remove-image {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.image-input {
+  width: 100%;
+  font-size: 10px;
+}
+
+.no-image-text {
+  font-size: 10px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Estilos para la vista previa y PDF */
+.description-cell {
+  max-width: 200px;
+}
+
+.description-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.product-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.product-image-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 60px;
+}
+
+.image-label {
+  font-size: 8px;
+  color: #666;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.reference-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Estilos específicos para el PDF */
+.pdf-export-only .reference-image {
+  width: 45px;
+  height: 45px;
+}
+
+.pdf-export-only .image-label {
+  font-size: 7px;
+}
+
+.pdf-export-only .description-content {
+  gap: 8px;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+
+  .product-image-preview {
+    align-self: flex-start;
+  }
+
+  .reference-image {
+    width: 40px;
+    height: 40px;
+  }
+}

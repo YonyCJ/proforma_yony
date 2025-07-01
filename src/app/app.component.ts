@@ -109,8 +109,6 @@ export class AppComponent {
     return `${day}/${month}/${year}`;
   }
 
-
-
   private nextId = 1;
 
   addProduct() {

@@ -371,8 +371,8 @@
         </thead>
         <tbody>
         <tr *ngFor="let product of products; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ product.quantity }}</td>
+          <td style="text-align: center; vertical-align: middle;">{{ i + 1 }}</td>
+          <td style="text-align: center; vertical-align: middle;">{{ product.quantity }}</td>
           <td class="description-cell">
             <div class="description-content">
               <span class="product-name">{{ product.name }}</span>
@@ -383,8 +383,8 @@
               </div>
             </div>
           </td>
-          <td>${{ getProductUnitPrice(product).toFixed(2) }}</td>
-          <td>${{ getProductTotal(product).toFixed(2) }}</td>
+          <td style="text-align: center; vertical-align: middle;">${{ getProductUnitPrice(product).toFixed(2) }}</td>
+          <td style="text-align: center; vertical-align: middle;">${{ getProductTotal(product).toFixed(2) }}</td>
         </tr>
         </tbody>
       </table>

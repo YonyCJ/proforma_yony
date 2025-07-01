@@ -239,7 +239,7 @@ export class AppComponent {
   }
 
 
-  generatePDF(): void {
+  /*generatePDF(): void {
     const element = document.querySelector('.pdf-export-only');
 
     if (!element) {
@@ -291,7 +291,60 @@ export class AppComponent {
         window.open(url, '_blank');
         elementRef.style.display = 'none';
       });
+  }*/
+
+  generatePDF(): void {
+    const element = document.querySelector('.pdf-export-only');
+
+    if (!element) {
+      console.error('Elemento para exportar no encontrado.');
+      return;
+    }
+
+    // ✅ Nombre dinámico del archivo
+    const number = this.proformaData?.number || '000';
+    const date = this.proformaData?.date || new Date().toISOString().split('T')[0];
+    const fileName = `PROFORMA N° ${number} - ${date}.pdf`;
+
+    const opt = {
+      margin: 0.3,
+      filename: fileName,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    const elementRef = element as HTMLElement;
+    elementRef.style.display = 'block';
+
+    html2pdf()
+      .set(opt)
+      .from(elementRef)
+      .toPdf()
+      .get('pdf')
+      .then(async (pdf: any) => {
+        const totalPages = pdf.internal.getNumberOfPages();
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        const imageBase64 = await this.loadImageAsBase64('assets/img/circu.png');
+        const imgWidth = 4;
+        const imgHeight = 4;
+        const x = (pageWidth - imgWidth) / 2;
+        const y = (pageHeight - imgHeight) / 2;
+
+        for (let i = 1; i <= totalPages; i++) {
+          pdf.setPage(i);
+          pdf.setGState?.(new pdf.GState({ opacity: 0.1 }));
+          pdf.addImage(imageBase64, 'PNG', x, y, imgWidth, imgHeight);
+        }
+      })
+      .save()  // ✅ Descarga directamente el PDF
+      .then(() => {
+        elementRef.style.display = 'none';
+      });
   }
+
 
   loadImageAsBase64(url: string): Promise<string> {
     return new Promise((resolve, reject) => {

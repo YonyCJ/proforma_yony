@@ -620,6 +620,13 @@ input[type="number"] {
   border-color: #43b99e;
 }
 
+.editable-cell {
+  max-width: 100%;
+  white-space: normal;     /* Permite saltos de línea */
+  word-break: break-word;  /* Rompe palabras largas */
+}
+
+
 /* Estilos específicos para inputs numéricos */
 .number-input {
   width: 50px;
@@ -772,7 +779,8 @@ input[type="number"] {
 
 /* Estilos para la vista previa y PDF */
 .description-cell {
-  max-width: 200px;
+  max-width: 300px;
+  word-break: break-word;
 }
 
 .description-content {

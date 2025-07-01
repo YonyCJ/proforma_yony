@@ -413,8 +413,8 @@ export class AppComponent {
   onProductNameChange(index: number) {
     // Solo validar longitud, no recalcular precios hasta que termine de escribir
     const product = this.products[index];
-    if (product.name && product.name.length > 50) {
-      product.name = product.name.substring(0, 50);
+    if (product.name && product.name.length > 2000) {
+      product.name = product.name.substring(0, 2000);
     }
   }
 

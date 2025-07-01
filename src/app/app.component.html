@@ -123,7 +123,7 @@
       <tr *ngFor="let product of products; let i = index">
         <!-- Campo editable para el nombre del producto -->
         <!-- Versión con actualización en tiempo real -->
-        <td>
+        <td class="editable-cell">
           <input
             type="text"
             [(ngModel)]="product.name"
@@ -224,6 +224,14 @@
     <button (click)="generatePDF()" class="btn-generate">DESCARGAR PDF</button>
   </div>
 
+
+
+
+
+
+
+
+
   <!-- Vista previa del PDF -->
   <div class="pdf-preview" *ngIf="showPreview">
     <h3>Vista Previa de la Proforma</h3>
@@ -274,8 +282,8 @@
             </thead>
             <tbody>
             <tr *ngFor="let product of products; let i = index">
-              <td>{{ i + 1 }}</td>
-              <td>{{ product.quantity }}</td>
+              <td style="text-align: center; vertical-align: middle;">{{ i + 1 }}</td>
+              <td style="text-align: center; vertical-align: middle;">{{ product.quantity }}</td>
               <td class="description-cell">
                 <div class="description-content">
                   <span class="product-name">{{ product.name }}</span>
@@ -286,8 +294,8 @@
                   </div>
                 </div>
               </td>
-              <td>${{ getProductUnitPrice(product).toFixed(2) }}</td>
-              <td>${{ getProductTotal(product).toFixed(2) }}</td>
+              <td style="text-align: center; vertical-align: middle;">${{ getProductUnitPrice(product).toFixed(2) }}</td>
+              <td style="text-align: center; vertical-align: middle;">${{ getProductTotal(product).toFixed(2) }}</td>
             </tr>
             </tbody>
           </table>
@@ -309,6 +317,10 @@
 
 
 </div>
+
+
+
+
 
 
 <!-- CONTENIDO SOLO PARA EXPORTACIÓN A PDF (oculto al usuario) -->

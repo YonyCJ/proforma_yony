@@ -1,0 +1,34 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100 relative overflow-hidden">
+  <!-- Fondo con logo tenue con animación sutil -->
+  <div class="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-10 animate-pulse-slow"
+       style="background-image: url('assets/img/conecta.png');"></div>
+
+  <!-- Contenedor del formulario con animación de entrada -->
+  <div
+    class="relative z-10 bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm space-y-6 animate-fade-in-down"
+  >
+    <h2 class="text-2xl font-bold text-center text-[#9E0031] animate-slide-in">INICIAR SESIÓN</h2>
+
+    <form (submit)="login(); $event.preventDefault()" class="space-y-4">
+      <div class="transition duration-300 hover:scale-[1.02]">
+        <label class="block text-sm font-medium text-gray-700">Usuario</label>
+        <input type="text" [(ngModel)]="username" name="username"
+               class="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+               required />
+      </div>
+      <div class="transition duration-300 hover:scale-[1.02]">
+        <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <input type="password" [(ngModel)]="password" name="password"
+               class="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+               required />
+      </div>
+
+      <div *ngIf="error" class="text-sm text-red-600 text-center animate-fade-in-fast">{{ error }}</div>
+
+      <button type="submit"
+              class="w-full py-2 px-4 bg-[#9E0031] text-white font-semibold rounded-md hover:bg-red-700 shadow-md hover:shadow-xl transition-all duration-300">
+        Entrar
+      </button>
+    </form>
+  </div>
+</div>

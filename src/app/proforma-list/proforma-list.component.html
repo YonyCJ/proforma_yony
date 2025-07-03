@@ -1,0 +1,199 @@
+<div class="p-6 w-full mx-auto space-y-6">
+
+  <div class="flex justify-between items-center">
+    <!-- Botón AGREGAR -->
+    <button
+      class="px-6 py-2 bg-[#80DED9] hover:bg-[#9E0031]/80 text-black text-sm font-semibold rounded-3 shadow-md hover:shadow-lg transition-all duration-200 ease-in-out"
+      [routerLink]="['/proformas/new']"
+    >
+      AGREGAR
+    </button>
+
+    <!-- Botón SALIR -->
+    <button
+      class="px-6 py-2 bg-[#9E0031] rounded-3 hover:bg-gray-300 text-sm font-semibold rounded-full shadow transition text-white"
+      (click)="logout()"
+    >
+      SALIR
+    </button>
+  </div>
+
+
+  <!-- Tabla -->
+  <div class="overflow-x-auto rounded-xl shadow-md border border-gray-100">
+    <table class="min-w-full divide-y divide-gray-200 text-sm text-center">
+      <thead class="bg-gradient-to-r from-[#9E0031] to-[#9E0031] text-white text-xs uppercase tracking-wider">
+      <tr>
+        <th class="px-4 py-3">Código</th>
+        <th class="px-4 py-3">Fecha</th>
+        <th class="px-4 py-3">Validez</th>
+        <th class="px-4 py-3">Transporte</th>
+        <th class="px-4 py-3">Diezmo</th>
+        <th class="px-4 py-3">Inversión</th>
+<!--        <th class="px-4 py-3">Sub Total</th>-->
+        <th class="px-4 py-3">Total</th>
+        <th class="px-4 py-3">Ganancia +IVA</th>
+        <th class="px-4 py-3">Ganancia -IVA</th>
+        <th class="px-4 py-3">Vendedor</th>
+        <th class="px-4 py-3">Estado</th>
+        <th class="px-4 py-3">Acciones</th>
+      </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-100">
+      <tr *ngFor="let proforma of proformas" class="hover:bg-gray-50 transition">
+        <td class="px-4 py-3 text-gray-700">{{ proforma.code }}</td>
+        <td class="px-4 py-3 text-gray-700">{{ proforma.proformaDate | date: 'dd/MM/yyyy' }}</td>
+        <td class="px-4 py-3 text-gray-700">{{ proforma.validity }}</td>
+        <td class="px-4 py-3 text-gray-700">{{ proforma.costTransport | currency: '$' }}</td>
+        <td class="px-4 py-3 text-gray-700">{{ proforma.diezmo | currency: '$' }}</td>
+        <td class="px-4 py-3 text-gray-700">{{ proforma.inversion | currency: '$' }}</td>
+<!--        <td class="px-4 py-3 font-semibold text-blue-700">{{ proforma.subTotal | currency: '$' }}</td>-->
+        <td class="px-4 py-3 font-semibold text-[#000000]">{{ proforma.total | currency: '$' }}</td>
+        <td class="px-4 py-3 font-semibold text-green-600">{{ (proforma.total - proforma.inversion) | currency: '$' }}</td>
+        <td class="px-4 py-3 font-semibold text-green-600">{{ (proforma.subTotal - (proforma.inversion/1.15)) | currency: '$' }}</td>
+        <td class="px-4 py-3 text-gray-700">{{ proforma.seller?.name }}</td>
+        <td class="px-4 py-3">
+            <span
+              class="px-2 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="proforma.isSold ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
+            >
+              {{ proforma.isSold ? 'Vendido' : 'Pendiente' }}
+            </span>
+        </td>
+        <td class="px-4 py-3">
+          <div class="flex justify-center items-center gap-2">
+            <button
+              class="p-2 rounded-5 bg-blue-100 hover:bg-blue-200 text-blue-700 transition"
+              title="Ver Productos"
+              (click)="openProductsModal(proforma.product, proforma)">
+              🔍
+            </button>
+            <button
+              class="p-2 rounded-5 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 transition"
+              title="Editar"
+              [routerLink]="['/proformas/edit', proforma.id]">
+              ✏️
+            </button>
+            <button
+              class="p-2 rounded-5 bg-red-100 hover:bg-red-200 text-red-700 transition"
+              title="Eliminar"
+              (click)="onDelete(proforma.id)">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<!-- Modal de productos -->
+<div
+  id="productsModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-10 hidden transition-opacity"
+>
+  <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-gray-200 relative">
+  <div class="flex justify-between items-center px-6 py-4 bg-[#9E0031] text-white rounded-t-2xl">
+      <h3 class="text-lg font-semibold tracking-wide">🛒 PRODUCTOS DE LA PROFORMA - {{ selectedProforma?.code }}</h3>
+      <button class="text-white text-2xl font-bold leading-none hover:text-red-200" (click)="closeProductsModal()">×</button>
+    </div>
+    <div class="p-6 max-h-[60vh] overflow-y-auto">
+      <table class="w-full text-sm border border-gray-200 rounded-md overflow-hidden">
+        <thead class="bg-gray-100 text-gray-700">
+        <tr class="text-center">
+          <th class="px-4 py-2">Producto</th>
+          <th class="px-4 py-2">Cantidad</th>
+          <th class="px-4 py-2">Precio</th>
+          <th class="px-4 py-2">Índice %</th>
+          <th class="px-4 py-2">Imagen</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let p of selectedProducts" class="text-center odd:bg-white even:bg-gray-50">
+          <td class="px-4 py-2">{{ p.name }}</td>
+          <td class="px-4 py-2">{{ p.quantity }}</td>
+          <td class="px-4 py-2">S/. {{ p.price }}</td>
+          <td class="px-4 py-2">{{ p.percentageIndex }}%</td>
+          <td class="px-4 py-2">
+            <!-- Miniatura -->
+            <img
+              [src]="p.image"
+              alt="Imagen del producto"
+              class="h-12 w-12 object-cover rounded shadow-md cursor-pointer"
+              (mouseenter)="onHoverImage(p.image)"
+              (mouseleave)="onLeaveImage()"
+            />
+          </td>
+
+
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+<div
+  *ngIf="zoomImageUrl"
+  class="fixed z-[999] top-[20%] left-1/2 transform -translate-x-1/2 bg-white p-2 border border-gray-300 rounded-lg shadow-2xl"
+>
+  <img [src]="zoomImageUrl" class="max-w-[300px] max-h-[300px] object-contain" />
+</div>
+
+
+
+
+
+<!-- Modal de Confirmación -->
+<div
+  *ngIf="showDeleteModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-10"
+>
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 border border-gray-200 text-center space-y-4">
+
+    <!-- Icono o encabezado -->
+    <div class="text-red-600 text-4xl">⚠️</div>
+
+    <!-- Mensaje principal -->
+    <h2 class="text-xl font-bold text-gray-800">¿Estás seguro de eliminar esta proforma?</h2>
+    <h3 class="text-md font-medium text-gray-600">Código: {{ selectedProforma?.code }}</h3>
+    <p class="text-sm text-gray-500">Esta acción no se puede deshacer.</p>
+
+    <!-- Botones alineados en extremos -->
+    <div class="flex justify-between pt-4">
+      <button
+        class="px-4 py-2 rounded-md text-sm rounded-5 text-gray-700 border border-gray-300 hover:bg-gray-100 transition"
+        (click)="cancelDelete()"
+      >
+        Cancelar
+      </button>
+      <button
+        class="px-4 py-2 bg-[#9E0031] text-white text-sm rounded-5 hover:bg-red-500 transition flex items-center justify-center gap-2 min-w-[100px]"
+        (click)="confirmDelete()"
+        [disabled]="isDeleting"
+      >
+        <ng-container *ngIf="!isDeleting">Eliminar</ng-container>
+        <ng-container *ngIf="isDeleting">
+          <svg class="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10"
+                    stroke="currentColor" stroke-width="4" fill="none"></circle>
+            <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"></path>
+          </svg>
+        </ng-container>
+      </button>
+
+    </div>
+  </div>
+</div>
+

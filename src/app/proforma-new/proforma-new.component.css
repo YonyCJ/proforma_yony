@@ -1,0 +1,854 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.info-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.client-info, .seller-info {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.client-info h3, .seller-info h3 {
+  margin-top: 0;
+  color: #495057;
+}
+
+.form-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.form-grid input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.add-product-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border: 1px solid #e0e0e0;
+}
+
+.add-product-section h3 {
+  margin-top: 0;
+  color: #495057;
+}
+
+.product-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  align-items: end;
+}
+
+.product-form input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.btn-add {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  margin-bottom: 15px;
+}
+
+.btn-add:hover {
+  background-color: #218838;
+}
+
+.products-table-container {
+  overflow-x: auto;
+  margin-bottom: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.products-table th,
+.products-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.products-table th {
+  background-color: #343a40;
+  color: white;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+}
+
+.products-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.products-table td.selected {
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-remove {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-remove:hover {
+  background-color: #c82333;
+}
+
+.profit-section {
+  background: #e8f4f8;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border: 1px solid #bee5eb;
+}
+
+.profit-section h3 {
+  margin-top: 0;
+  color: #0c5460;
+}
+
+.percentage-selector {
+  margin-bottom: 20px;
+}
+
+.percentage-selector label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.percentage-selector select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.profit-display {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #bee5eb;
+}
+
+.profit-display h4 {
+  margin-top: 0;
+  color: #0c5460;
+}
+
+.profit-display p {
+  margin: 5px 0;
+}
+
+.pdf-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* Alineación por defecto (izquierda) */
+  gap: 10px; /* Espacio entre botones */
+  margin-bottom: 30px;
+}
+
+/* Estilos para móvil (generalmente < 768px) */
+@media (max-width: 767px) {
+  .pdf-buttons {
+    justify-content: space-between; /* Uno a cada lado */
+  }
+
+  /* Opcional: asegurar que los botones ocupen el mismo ancho */
+  .pdf-buttons button {
+    flex: 1;
+    min-width: 120px; /* Ancho mínimo para que no se vean muy pequeños */
+  }
+}
+
+.btn-preview, .btn-generate {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0 10px;
+  transition: background-color 0.3s;
+}
+
+.btn-preview:hover, .btn-generate:hover {
+  background-color: #0056b3;
+}
+
+.pdf-preview {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 30px;
+  margin-top: 30px;
+}
+
+.preview-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.preview-header {
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 20px;
+}
+
+.preview-header h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #333;
+}
+
+.preview-parties {
+  display: flex;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.preview-client {
+  /* Ya está alineado a la izquierda por defecto */
+  font-size: 14px;
+  color: #8a8a8a;
+}
+
+.preview-seller {
+  margin-left: auto; /* Empuja el contenedor a la derecha */
+  text-align: left; /* Alinea el texto a la izquierda (dentro del bloque) */
+  /* Opcional: ancho máximo si no quieres que ocupe mucho espacio */
+  max-width: 50%; /* Ajusta según necesites */
+  font-size: 14px;
+  color: #8a8a8a;
+}
+
+/* Estilos para títulos y párrafos (igual que antes) */
+.preview-client h4, .preview-seller h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #000000;
+  font-weight: bold !important;
+  font-size: 16px;
+}
+
+.preview-client p, .preview-seller p {
+  margin: 2px 0;
+  line-height: 1.3;
+}
+
+.preview-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.preview-table th,
+.preview-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+  font-size: 13px;
+}
+
+.preview-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  text-align: center;
+}
+
+.preview-totals {
+  text-align: right;
+  padding: 5px;
+  /*background-color: #f8f9fa;*/
+  border-radius: 4px;
+}
+
+.preview-totals p {
+  margin: 0;
+  font-size: 13px;
+}
+
+
+@media (max-width: 768px) {
+  .info-section {
+    grid-template-columns: 1fr;
+  }
+
+  .product-form {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-parties {
+    grid-template-columns: 1fr;
+  }
+  .proforma-header-form {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .preview-header-complete {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .preview-header-left {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .preview-header-right {
+    text-align: center;
+  }
+
+  .proforma-title {
+    font-size: 24px;
+  }
+
+}
+
+
+.validity-text {
+  color: red;
+  font-size: 10px;
+  margin-top: -20px;
+  text-align: left;
+  font-style: italic;
+}
+
+
+
+/* Sección de datos de proforma */
+.proforma-header-section {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #dee2e6;
+}
+
+.proforma-header-form {
+  display: flex;
+  flex-wrap: wrap; /* ✅ Permite que los elementos bajen en móvil */
+  gap: 12px;        /* Espacio entre campos */
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #495057;
+}
+
+.form-field input {
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Header completo de la vista previa */
+.preview-header-complete {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  /*padding: 15px 0;*/
+  border-bottom: 2px solid #dee2e6;
+}
+
+.preview-header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;    /* Centra horizontalmente */
+}
+
+.logo-container {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 35px;
+}
+
+.company-logo {
+  max-width: 150px;       /* Ajusta según necesidad */
+  max-height: 80px;       /* Ajusta según necesidad */
+  object-fit: contain;
+}
+
+.proforma-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-top: -10px;
+}
+
+.proforma-title-pdf {
+  font-size: 32px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-top: -10px;
+}
+
+.preview-header-right {
+  position: relative;
+  top: 20px;           /* Lo desplaza hacia abajo desde su posición original */
+  margin-left: auto;
+  text-align: left;
+  font-size: 14px;
+  color: #495057;
+}
+
+.preview-header-right p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+
+.product-form {
+  display: flex;
+  gap: 30px; /* Espacio horizontal entre los inputs */
+  flex-wrap: wrap; /* Para que se acomoden si no caben */
+}
+
+
+.form-group {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 10px 10px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+}
+
+.form-group label {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  background-color: white;
+  padding: 0 4px;
+  color: #999;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.2s ease all;
+}
+
+/* Cuando el input está enfocado o tiene texto */
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label {
+  top: -8px;
+  font-size: 12px;
+  color: #007bff;
+}
+
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-responsive table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px; /* Ajusta este valor según tus columnas */
+}
+
+
+.preview-header-complete {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Alinea los items al inicio (parte superior) */
+  width: 100%;
+}
+
+.preview-header-right {
+  text-align: right; /* Alinea el texto a la derecha */
+  font-size: 14px;
+  color: #495057;
+  margin-left: auto; /* Empuja el bloque a la derecha */
+}
+
+.preview-header-right p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* Estilos para móvil - ya no necesitas cambiar la alineación */
+@media (max-width: 768px) {
+  .preview-header-complete {
+    flex-direction: row; /* Mantiene la disposición en fila (no cambia a columna) */
+  }
+
+  /* Opcional: ajusta el margen superior si es necesario */
+  .preview-header-right {
+    position: relative;
+    top: 20px; /* Mantiene el desplazamiento hacia abajo como en desktop */
+  }
+}
+
+/*MARGENES*/
+
+.pdf-export-only {
+  margin: 0.5cm 1.5cm 0.5cm 1.5cm !important;
+  /* Orden: top right bottom left */
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin-top: 0.5cm;
+    margin-bottom: 0.5cm;
+    margin-left: 1.5cm;
+    margin-right: 1.5cm;
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+
+/* Estilo para la celda seleccionada */
+.products-table td.selected {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+}
+
+/* Estilo para la celda por defecto (1%) cuando no hay selección */
+.products-table td.default {
+  background-color: #FFC107;
+  color: black;
+  font-weight: bold;
+}
+
+/* Hover effect para las celdas clickeables */
+.products-table td[title]:hover {
+  background-color: #43b99e;
+  cursor: pointer;
+}
+
+
+
+/* Estilos para campos editables */
+.editable-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #43b99e;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.editable-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.editable-input:hover {
+  border-color: #43b99e;
+}
+
+.editable-cell {
+  max-width: 100%;
+  white-space: normal;     /* Permite saltos de línea */
+  word-break: break-word;  /* Rompe palabras largas */
+}
+
+
+/* Estilos específicos para inputs numéricos */
+.number-input {
+  width: 50px;
+  text-align: center;
+}
+
+.price-input {
+  width: 50px;
+  text-align: right;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.tooltip-container {
+  position: relative;
+
+  &:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 80%;
+  left: 10%;
+  transform: translateX(-50%);
+  background-color: #ffda00;
+  color: #000000;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+  }
+}
+
+
+/* Estilos para el preview de imagen en el formulario */
+.image-preview {
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.preview-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+}
+
+.btn-clear-image {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos para la tabla de productos */
+.image-cell {
+  width: 100px;
+  text-align: center;
+}
+
+.product-image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.product-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.btn-remove-image {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.image-input {
+  width: 100%;
+  font-size: 10px;
+}
+
+.no-image-text {
+  font-size: 10px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Estilos para la vista previa y PDF */
+.description-cell {
+  max-width: 300px;
+  word-break: break-word;
+}
+
+.description-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.product-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.product-image-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 60px;
+}
+
+.image-label {
+  font-size: 8px;
+  color: #666;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.reference-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Estilos específicos para el PDF */
+.pdf-export-only .reference-image {
+  width: 45px;
+  height: 45px;
+}
+
+.pdf-export-only .image-label {
+  font-size: 7px;
+}
+
+.pdf-export-only .description-content {
+  gap: 8px;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+
+  .product-image-preview {
+    align-self: flex-start;
+  }
+
+  .reference-image {
+    width: 40px;
+    height: 40px;
+  }
+}

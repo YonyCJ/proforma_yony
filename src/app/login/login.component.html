@@ -1,34 +1,55 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-100 relative overflow-hidden">
-  <!-- Fondo con logo tenue con animación sutil -->
+<div class="min-h-screen flex items-center justify-center bg-[#f8d3c8] relative overflow-hidden">
+
+  <!-- Fondo con logo tenue -->
   <div class="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-10 animate-pulse-slow"
        style="background-image: url('assets/img/conecta.png');"></div>
 
-  <!-- Contenedor del formulario con animación de entrada -->
+  <!-- Contenedor del formulario -->
   <div
-    class="relative z-10 bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm space-y-6 animate-fade-in-down"
+    class="relative z-10 p-8 rounded-2xl w-full max-w-sm space-y-6 animate-fade-in-down
+           bg-[#f8d3c8] shadow-[6px_6px_12px_#dab6ac,-6px_-6px_12px_#fff0ea]"
   >
-    <h2 class="text-2xl font-bold text-center text-[#9E0031] animate-slide-in">INICIAR SESIÓN</h2>
+    <h2 class="text-2xl font-bold text-center !text-[#955a4b] animate-slide-in">
+    INICIAR SESIÓN
+    </h2>
 
     <form (submit)="login(); $event.preventDefault()" class="space-y-4">
+
+      <!-- Usuario -->
       <div class="transition duration-300 hover:scale-[1.02]">
-        <label class="block text-sm font-medium text-gray-700">Usuario</label>
+        <label class="block text-sm font-medium text-[#955a4b]">Usuario</label>
         <input type="text" [(ngModel)]="username" name="username"
-               class="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+               class="w-full mt-1 px-4 py-2 rounded-xl border-none
+                      bg-[#f8d3c8] shadow-[inset_4px_4px_8px_#dab6ac,inset_-4px_-4px_8px_#fff0ea]
+                      focus:outline-none focus:ring-2 focus:ring-[#7a493c] transition"
                required />
       </div>
+
+      <!-- Contraseña -->
       <div class="transition duration-300 hover:scale-[1.02]">
-        <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <label class="block text-sm font-medium text-[#955a4b]">Contraseña</label>
         <input type="password" [(ngModel)]="password" name="password"
-               class="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+               class="w-full mt-1 px-4 py-2 rounded-xl border-none
+                      bg-[#f8d3c8] shadow-[inset_4px_4px_8px_#dab6ac,inset_-4px_-4px_8px_#fff0ea]
+                      focus:outline-none focus:ring-2 focus:ring-[#7a493c] transition"
                required />
       </div>
 
-      <div *ngIf="error" class="text-sm text-red-600 text-center animate-fade-in-fast">{{ error }}</div>
+      <!-- Error -->
+      <div *ngIf="error" class="text-sm text-red-600 text-center animate-fade-in-fast">
+        {{ error }}
+      </div>
 
+      <!-- Botón -->
       <button type="submit"
-              class="w-full py-2 px-4 bg-[#9E0031] text-white font-semibold rounded-md hover:bg-red-700 shadow-md hover:shadow-xl transition-all duration-300">
+              class="w-full py-2 px-4 text-white font-semibold rounded-4
+                     bg-[#955a4b] hover:bg-[#7a493c]
+                     shadow-[2px_2px_4px_#7a493c,-2px_-2px_4px_#7a493c]
+                     hover:shadow-[2px_2px_4px_#7a493c,-2px_-2px_4px_#7a493c]
+                     transition-all duration-300">
         Entrar
       </button>
+
     </form>
   </div>
 </div>

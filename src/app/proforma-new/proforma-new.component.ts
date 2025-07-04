@@ -755,7 +755,7 @@ export class ProformaNewComponent implements OnInit{
     this.proformaService.save(proformaToSave).subscribe({
       next: (response) => {
         console.log('Proforma guardada correctamente:', response);
-        this.router.navigate(['/proformas/list']);
+        this.router.navigate(['/proformas']);
       },
       error: (err) => {
         console.error('Error al guardar la proforma:', err);
@@ -805,7 +805,7 @@ export class ProformaNewComponent implements OnInit{
     this.proformaService.update(this.proformaId!, proformaToUpdate).subscribe({
       next: (response) => {
         console.log('Proforma actualizada correctamente:', response);
-        this.router.navigate(['/proformas/list']);
+        this.router.navigate(['/proformas']);
       },
       error: (err) => {
         console.error('Error al actualizar la proforma:', err);

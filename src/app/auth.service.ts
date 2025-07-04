@@ -7,8 +7,8 @@ import {Router} from '@angular/router';
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
-  // private readonly API_URL = 'http://localhost:8081/auth';
-  private API_URL = 'https://proformabackend-production.up.railway.app/auth';
+  private readonly API_URL = 'http://localhost:8081/auth';
+  // private API_URL = 'https://proformabackend-production.up.railway.app/auth';
 
   constructor(private http: HttpClient, private router: Router) {}
 

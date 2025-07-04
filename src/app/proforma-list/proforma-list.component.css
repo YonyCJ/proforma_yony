@@ -24,3 +24,26 @@
   visibility: visible;
   opacity: 1;
 }
+
+
+
+
+/* src/styles.scss o styles.css */
+.scrollbar-custom::-webkit-scrollbar {
+  height: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f8d3c8;
+  border-radius: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #7a493c;
+  border-radius: 10px;
+  border: 2px solid #f8d3c8;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: #5e372e;
+}

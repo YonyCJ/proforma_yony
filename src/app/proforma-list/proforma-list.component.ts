@@ -40,6 +40,8 @@ export class ProformaListComponent implements OnInit{
   totalPages: number = 0;
   searchTerm: string = '';
 
+  codeSelected: string = '';
+
 
 
   constructor(private proformaService: ProformaService,
@@ -101,8 +103,9 @@ export class ProformaListComponent implements OnInit{
 
 
 
-  onDelete(id: string) {
+  onDelete(id: string, code: string): void {
     this.idToDelete = id;
+    this.codeSelected = code;
     this.showDeleteModal = true;
   }
 

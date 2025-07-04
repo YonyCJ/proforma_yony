@@ -123,7 +123,7 @@
               <button class="p-2 rounded-5 bg-[#f8d3c8]
                                shadow-[6px_6px_12px_#dab6ac,-6px_-6px_12px_#fff0ea]
                                hover:brightness-95 transition"
-                      (click)="onDelete(proforma.id)">
+                      (click)="onDelete(proforma.id, proforma.code)">
                 <i class="fas fa-trash"></i>
               </button>
               <span class="tooltip-text">Eliminar</span>
@@ -277,7 +277,7 @@
 
     <!-- Mensaje principal -->
     <h2 class="text-xl font-bold text-gray-800">¿Estás seguro de eliminar esta proforma?</h2>
-    <h3 class="text-md font-medium text-gray-700">Código: {{ selectedProforma?.code }}</h3>
+    <h3 class="text-md font-medium text-gray-700">Código: {{ this.codeSelected }}</h3>
     <p class="text-sm text-gray-600">Esta acción no se puede deshacer.</p>
 
     <!-- Botones -->

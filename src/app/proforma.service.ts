@@ -7,8 +7,8 @@ import {PagedResult} from './PagedResult';
   providedIn: 'root'
 })
 export class ProformaService {
-  // private apiUrl = 'http://localhost:8081/proforma'; // Cambia si usas proxy
-  private apiUrl = 'https://proformabackend-production.up.railway.app/proforma'; // Cambia si usas proxy
+  // private apiUrl = 'http://localhost:8081/proforma';
+  private apiUrl = 'https://proformabackend-production.up.railway.app/proforma';
 
   constructor(private http: HttpClient) {}
 
@@ -37,5 +37,8 @@ export class ProformaService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  changeState(id: string, request: { estado: string }) {
+    return this.http.put(`${this.apiUrl}/change/${id}`, request);
+  }
 
 }

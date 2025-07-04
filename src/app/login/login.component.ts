@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {NgIf} from '@angular/common';
+import {AuthService} from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -14,26 +15,23 @@ import {NgIf} from '@angular/common';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-
   username = '';
   password = '';
   error = '';
 
-  // Credenciales ficticias (puedes ajustar)
-  private readonly validUser = 'ecuador';
-  private readonly validPass = 'quito2025';
-
-  constructor(private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   login(): void {
-    console.log('Intentando iniciar sesión con:', this.username, this.password);
-    if (this.username === this.validUser && this.password === this.validPass) {
-      this.error = '';
-      localStorage.setItem('loggedIn', 'true');// ✅ se guarda hasta que se cierre la pestaña
-      this.router.navigate(['/proformas']); // o '/dashboard' si usas esa ruta
-    } else {
-      this.error = 'Usuario o contraseña incorrectos';
-    }
+    this.authService.login(this.username, this.password).subscribe({
+      next: (res) => {
+        this.authService.saveToken(res.token);
+        this.router.navigate(['/proformas']); // o tu ruta protegida
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = 'Credenciales inválidas';
+      }
+    });
   }
 
 

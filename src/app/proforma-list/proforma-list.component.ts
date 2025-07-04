@@ -4,6 +4,8 @@ import {PagedResult} from '../PagedResult';
 import {CurrencyPipe, DatePipe, NgClass, NgForOf, NgIf} from '@angular/common';
 import {Router, RouterLink} from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
+import {AuthService} from '../auth.service';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-proforma-list',
@@ -13,7 +15,8 @@ import { ActivatedRoute } from '@angular/router';
     CurrencyPipe,
     RouterLink,
     NgClass,
-    NgIf
+    NgIf,
+    FormsModule
   ],
   templateUrl: './proforma-list.component.html',
   styleUrl: './proforma-list.component.css'
@@ -27,10 +30,20 @@ export class ProformaListComponent implements OnInit{
   showDeleteModal = false;
   idToDelete: string | null = null;
   isDeleting = false;
+  showModal = false;
+  proformaSeleccionada: any = null;
+  isLoading = false;
+
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalItems: number = 0;
+  totalPages: number = 0;
+  searchTerm: string = '';
 
 
 
   constructor(private proformaService: ProformaService,
+              private authService: AuthService,
               private router: Router) {}
 
   ngOnInit(): void {
@@ -39,9 +52,29 @@ export class ProformaListComponent implements OnInit{
 
 
   loadProformas(): void {
-    this.proformaService.listPage('', 0, 10).subscribe((result: PagedResult<any>) => {
-      this.proformas = result.content;
-    });
+    this.proformaService.listPage(this.searchTerm, this.currentPage, this.pageSize)
+      .subscribe((result: any) => {
+        this.proformas = result.content;
+        this.totalItems = result.totalItems;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+      });
+  }
+
+  onSearch(): void {
+    this.currentPage = 0;
+    this.loadProformas();
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 0;
+    this.loadProformas();
+  }
+
+  goToPage(page: number): void {
+    if (page >= 0 && page < this.totalPages) {
+      this.currentPage = page;
+      this.loadProformas();
+    }
   }
 
 
@@ -104,9 +137,41 @@ export class ProformaListComponent implements OnInit{
 
 
   logout(): void {
-    localStorage.removeItem('loggedIn');// ✅ limpia sesión
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
+
+
+  openConfirmModal(proforma: any): void {
+    this.proformaSeleccionada = proforma;
+    this.showModal = true;
+  }
+
+  cancelModal(): void {
+    this.showModal = false;
+    this.proformaSeleccionada = null;
+  }
+
+  confirmChangeState(): void {
+    this.isLoading = true;
+
+    const nuevoEstado = this.proformaSeleccionada.estado === 'APROBADO'
+      ? 'PENDIENTE'
+      : 'APROBADO';
+
+    this.proformaService.changeState(this.proformaSeleccionada.id, { estado: nuevoEstado }).subscribe({
+      next: () => {
+        this.proformaSeleccionada.estado = nuevoEstado;
+        this.cancelModal();
+        this.isLoading = false;
+        this.loadProformas();
+      },
+      error: (err) => {
+        console.error('Error al cambiar el estado', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
 
 
 

@@ -852,3 +852,21 @@ input[type="number"] {
     height: 40px;
   }
 }
+
+
+.preview-table table {
+  page-break-inside: auto !important;
+}
+
+.preview-table tr {
+  page-break-inside: avoid !important;
+  page-break-after: auto !important;
+}
+
+.preview-table thead {
+  display: table-header-group !important;
+}
+
+.preview-table tfoot {
+  display: table-footer-group !important;
+}

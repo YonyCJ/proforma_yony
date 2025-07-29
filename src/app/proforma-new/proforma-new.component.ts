@@ -383,40 +383,38 @@ export class ProformaNewComponent implements OnInit{
 
   generatePDF(): void {
     const element = document.querySelector('.pdf-export-only') as HTMLElement;
-
     if (!element) {
       console.error('Elemento para exportar no encontrado.');
       return;
     }
 
-    // Mostrar el contenido temporalmente
+    // Mostramos temporalmente el contenido
     element.style.display = 'block';
 
-    // 🔄 Esperar que las imágenes del HTML estén completamente cargadas
+    // Esperar a que todas las imágenes estén cargadas
     const images = element.querySelectorAll('img');
-    const promises = Array.from(images).map((img: HTMLImageElement) => {
-      return new Promise<void>((resolve) => {
+    const imgPromises = Array.from(images).map((img: HTMLImageElement) => {
+      return new Promise<void>(resolve => {
         if (img.complete && img.naturalHeight !== 0) {
-          resolve(); // ya cargada
+          resolve();
         } else {
           img.onload = () => resolve();
-          img.onerror = () => resolve(); // continuar aunque falle una imagen
+          img.onerror = () => resolve();
         }
       });
     });
 
-    Promise.all(promises).then(async () => {
-      // Configuración PDF
-      const number = this.proformaData?.number || '000';
-      const date = this.proformaData?.date || new Date().toISOString().split('T')[0];
+    Promise.all(imgPromises).then(async () => {
+      const number   = this.proformaData?.number || '000';
+      const date     = this.proformaData?.date   || new Date().toISOString().split('T')[0];
       const fileName = `PROFORMA N° ${number} - ${date}.pdf`;
 
       const opt = {
-        margin: 0.3,
-        filename: fileName,
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { scale: 4, useCORS: true, scrollY: 0 }, // 👈 importante para imágenes externas
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        margin:       0.3,
+        filename:     fileName,
+        image:        { type: 'jpeg' as const, quality: 1.0 },
+        html2canvas:  { scale: 4, useCORS: true, scrollY: 0 },
+        jsPDF:        { unit: 'in' as const, format: 'a4' as const, orientation: 'portrait' as const }
       };
 
       html2pdf()
@@ -429,25 +427,32 @@ export class ProformaNewComponent implements OnInit{
           const pageWidth = pdf.internal.pageSize.getWidth();
           const pageHeight = pdf.internal.pageSize.getHeight();
 
-          // Marca de agua
-          const imageBase64 = await this.loadImageAsBase64('assets/img/circu.png');
-          const imgWidth = 4;
-          const imgHeight = 4;
-          const x = (pageWidth - imgWidth) / 2;
-          const y = (pageHeight - imgHeight) / 2;
+          // Cargar marca de agua
+          const watermark = await this.loadImageAsBase64('assets/img/circu.png');
+          const imgW = 4;
+          const imgH = 4;
+          const x = (pageWidth - imgW) / 2;
+          const y = (pageHeight - imgH) / 2;
 
+          // Añadir watermark a todas las páginas
           for (let i = 1; i <= totalPages; i++) {
             pdf.setPage(i);
-            pdf.setGState?.(new pdf.GState({ opacity: 0.1 }));
-            pdf.addImage(imageBase64, 'PNG', x, y, imgWidth, imgHeight);
+            pdf.setGState(new pdf.GState({ opacity: 0.1 }));
+            pdf.addImage(watermark, 'PNG', x, y, imgW, imgH);
+            pdf.setGState(new pdf.GState({ opacity: 1.0 })); // Restaurar opacidad normal
           }
+
+          pdf.save(fileName);
+          element.style.display = 'none';
         })
-        .save()
-        .then(() => {
+        .catch((err: unknown) => {
+          console.error('Error generando PDF:', err);
           element.style.display = 'none';
         });
     });
   }
+
+
 
 
 

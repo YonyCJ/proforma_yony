@@ -98,7 +98,8 @@ export class ProformaNewComponent implements OnInit{
     number: '',
     date: new Date().toLocaleDateString('en-CA'), // Fecha actual por defecto
     validityDays: 0,
-    transport: 0
+    transport: 0,
+    observations: ''
   };
 
   proformaId: string | null = null;
@@ -131,7 +132,8 @@ export class ProformaNewComponent implements OnInit{
           number: data.code,
           date: data.proformaDate,
           validityDays: data.validity,
-          transport: data.costTransport
+          transport: data.costTransport,
+          observations: data.observations
         };
         this.totalInvestment = data.inversion;
         this.totalProfit = data.total;
@@ -500,6 +502,10 @@ export class ProformaNewComponent implements OnInit{
     return this.proformaData?.transport || 0;
   }
 
+  getValidity(): number {
+    return this.proformaData?.validityDays || 0;
+  }
+
   updateTransportText() {
     if (!this.transportCost || this.transportCost <= 0) {
       this.transportText = 'Sin costo de transporte definido';
@@ -730,6 +736,7 @@ export class ProformaNewComponent implements OnInit{
       proformaDate: this.proformaData.date,
       validity: this.proformaData.validityDays,
       costTransport: Number(this.proformaData.transport.toFixed(2)),
+      observations: this.proformaData.observations,
       inversion: Number(this.totalInvestment.toFixed(2)),
       subTotal: Number(this.getSubtotalWithoutIVA().toFixed(2)),
       diezmo: Number(getDiezmo.toFixed(2)),
@@ -781,6 +788,7 @@ export class ProformaNewComponent implements OnInit{
       proformaDate: this.proformaData.date,
       validity: this.proformaData.validityDays,
       costTransport: Number(this.proformaData.transport.toFixed(2)),
+      observations: this.proformaData.observations,
       inversion: Number(this.totalInvestment.toFixed(2)),
       subTotal: Number(this.getSubtotalWithoutIVA().toFixed(2)),
       diezmo: Number(getDiezmo.toFixed(2)),

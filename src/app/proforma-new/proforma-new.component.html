@@ -38,12 +38,20 @@
                (input)="updateValidityText()">
       </div>
       <div class="form-field">
-        <label for="transport">Costo de Transporte:</label>
+        <label for="transport">Otros Gastos:</label>
         <input [(ngModel)]="proformaData.transport"
                id="transport"
                type="number"
                min="1"
                (input)="updateTransportText()">
+      </div>
+
+      <div class="form-field">
+        <label for="observations">Observaciones:</label>
+        <textarea id="observations"
+                  [(ngModel)]="proformaData.observations"
+                  rows="3"
+                  placeholder="Observaciones, notas especiales…"></textarea>
       </div>
 
     </div>
@@ -363,15 +371,26 @@
         </div>
 
         <div class="validity-text">
-          * {{ validityText }}
+          @if (getValidity() == 0 || getValidity() == null){
+            * {{ validityText }}
+          } @else {
+            * Válido por {{getValidity()}} días
+          }
         </div>
 
         <div class="preview-totals">
           <p><strong>SUBTOTAL SIN IVA:</strong> ${{ getSubtotalWithoutIVA().toFixed(2) }}</p>
           <p><strong>15% IVA:</strong> ${{ getIVA().toFixed(2) }}</p>
-          <p><strong>TRANSPORTE:</strong> ${{ getTransport().toFixed(2) }}</p>
+          <p><strong>OTROS:</strong> ${{ getTransport().toFixed(2) }}</p>
           <p><strong>TOTAL:</strong> ${{ getTotal().toFixed(2) }}</p>
         </div>
+
+        <!-- Observaciones -->
+        <div class="preview-observations" *ngIf="proformaData.observations">
+          <h4>Observaciones:</h4>
+          <p>{{ proformaData.observations }}</p>
+        </div>
+
       </div>
     </div>
   </div>
@@ -451,15 +470,26 @@
         </tbody>
       </table>
       <div class="validity-text">
-        * {{ validityText }}
+        @if (getValidity() == 0 || getValidity() == null){
+          * {{ validityText }}
+        } @else {
+          * Válido por {{getValidity()}} días
+        }
       </div>
 
       <div class="preview-totals">
         <p><strong>SUBTOTAL SIN IVA:</strong> ${{ getSubtotalWithoutIVA().toFixed(2) }}</p>
         <p><strong>15% IVA:</strong> ${{ getIVA().toFixed(2) }}</p>
-        <p><strong>TRANSPORTE:</strong> ${{ getTransport().toFixed(2) }}</p>
+        <p><strong>OTROS:</strong> ${{ getTransport().toFixed(2) }}</p>
         <p><strong>TOTAL:</strong> ${{ getTotal().toFixed(2) }}</p>
       </div>
+
+      <!-- Observaciones -->
+      <div class="preview-observations" *ngIf="proformaData.observations">
+        <h4>Observaciones:</h4>
+        <p>{{ proformaData.observations }}</p>
+      </div>
+
     </div>
   </div>
 </div>

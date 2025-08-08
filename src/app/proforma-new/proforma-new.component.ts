@@ -10,6 +10,7 @@ import {ProformaService} from '../proforma.service';
 interface Product {
   id: number;
   name: string;
+  sku: string;
   quantity: number;
   purchasePrice: number;
   imageUrl?: string | null;
@@ -53,6 +54,7 @@ export class ProformaNewComponent implements OnInit{
   products: Product[] = [];
   newProduct = {
     name: '',
+    sku: '',
     quantity: 0,
     purchasePrice: 0
   };
@@ -167,6 +169,7 @@ export class ProformaNewComponent implements OnInit{
             purchasePrice: purchasePrice,
             selectedPercentageIndex: Number(p.percentageIndex),
             imageUrl: p.image,
+            sku: p.sku,
             calculatedPrices: calculatedPrices
           };
         });
@@ -211,6 +214,7 @@ export class ProformaNewComponent implements OnInit{
     const product: Product = {
       id: this.nextId++,
       name: this.newProduct.name,
+      sku: this.newProduct.sku,
       quantity: this.newProduct.quantity,
       purchasePrice: this.newProduct.purchasePrice,
       imageUrl: this.selectedImagePreview,
@@ -323,6 +327,7 @@ export class ProformaNewComponent implements OnInit{
   private resetNewProduct() {
     this.newProduct = {
       name: '',
+      sku: '',
       quantity: 0,
       purchasePrice: 0
     };
@@ -530,6 +535,10 @@ export class ProformaNewComponent implements OnInit{
       return;
     }
 
+    if (!product.sku || product.sku.trim() === '') {
+      return;
+    }
+
     if (product.quantity <= 0) {
       alert('La cantidad debe ser mayor a 0');
       product.quantity = 1; // Valor por defecto
@@ -584,6 +593,14 @@ export class ProformaNewComponent implements OnInit{
     const product = this.products[index];
     if (product.name && product.name.length > 2000) {
       product.name = product.name.substring(0, 2000);
+    }
+  }
+
+  onProductSkuChange(index: number) {
+    // Solo validar longitud, no recalcular precios hasta que termine de escribir
+    const product = this.products[index];
+    if (product.sku && product.sku.length > 2000) {
+      product.sku = product.sku.substring(0, 2000);
     }
   }
 
@@ -759,7 +776,8 @@ export class ProformaNewComponent implements OnInit{
         quantity: p.quantity,
         price: Number(p.purchasePrice.toFixed(2)),
         percentageIndex: p.selectedPercentageIndex ?? 0,
-        image: p.imageUrl
+        image: p.imageUrl,
+        sku: p.sku
       }))
     };
     console.log("Proforma a guardar:", proformaToSave);
@@ -811,7 +829,8 @@ export class ProformaNewComponent implements OnInit{
         quantity: p.quantity,
         price: Number(p.purchasePrice.toFixed(2)),
         percentageIndex: p.selectedPercentageIndex ?? 0,
-        image: p.imageUrl
+        image: p.imageUrl,
+        sku: p.sku
       }))
     };
 

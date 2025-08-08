@@ -92,6 +92,10 @@
         <label>Nombre del producto</label>
       </div>
       <div class="form-group">
+        <input [(ngModel)]="newProduct.sku" type="text" required>
+        <label>Codigo</label>
+      </div>
+      <div class="form-group">
         <input [(ngModel)]="newProduct.quantity" type="number" required>
         <label>Cantidad</label>
       </div>
@@ -145,6 +149,7 @@
       <thead>
       <tr>
         <th>Producto</th>
+        <th>Codigo</th>
         <th>Cantidad</th>
         <th>Precio Real</th>
         <th>+1% Ganancia</th>
@@ -173,6 +178,17 @@
             (keyup.enter)="updateProduct(i)"
             class="editable-input"
             placeholder="Nombre del producto">
+        </td>
+
+        <td class="editable-cell">
+          <input
+            type="text"
+            [(ngModel)]="product.sku"
+            (input)="onProductSkuChange(i)"
+            (blur)="updateProduct(i)"
+            (keyup.enter)="updateProduct(i)"
+            class="editable-input"
+            placeholder="Codigo">
         </td>
 
         <td>
@@ -345,6 +361,7 @@
               <th>ITEM</th>
               <th>CANTIDAD</th>
               <th>DESCRIPCION</th>
+              <th>CODIGO</th>
               <th>P.UNITARIO</th>
               <th>TOTAL</th>
             </tr>
@@ -363,6 +380,7 @@
                   </div>
                 </div>
               </td>
+              <td style="text-align: center; vertical-align: middle;">{{ product.sku }}</td>
               <td style="text-align: center; vertical-align: middle;">${{ getProductUnitPrice(product).toFixed(2) }}</td>
               <td style="text-align: center; vertical-align: middle;">${{ getProductTotal(product).toFixed(2) }}</td>
             </tr>

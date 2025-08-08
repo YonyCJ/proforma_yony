@@ -206,6 +206,7 @@
         <thead class="text-gray-700 bg-[#f8d3c8] shadow-[inset_2px_2px_4px_#dab6ac,inset_-2px_-2px_4px_#fff0ea]">
         <tr class="text-center">
           <th class="px-4 py-2">Producto</th>
+          <th class="px-4 py-2">Codigo</th>
           <th class="px-4 py-2">Cantidad</th>
           <th class="px-4 py-2">Precio</th>
           <th class="px-4 py-2">Índice %</th>
@@ -215,6 +216,7 @@
         <tbody>
         <tr *ngFor="let p of selectedProducts" class="text-center odd:bg-[#f8d3c8] even:bg-[#fbe7e0]">
           <td class="px-4 py-2">{{ p.name }}</td>
+          <td class="px-4 py-2">{{ p.sku }}</td>
           <td class="px-4 py-2">{{ p.quantity }}</td>
           <td class="px-4 py-2">S/. {{ p.price }}</td>
           <td class="px-4 py-2">{{ p.percentageIndex }}%</td>

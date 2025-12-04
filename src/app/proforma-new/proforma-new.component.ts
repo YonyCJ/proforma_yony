@@ -69,11 +69,11 @@ export class ProformaNewComponent implements OnInit{
   };
 
   seller: Seller = {
-    name: '',
-    document: '',
-    address: '1793054722001',
+    name: 'ROSARIO DE LOURDES PAREDES MORALES',
+    document: 'Pichincha La Magdalena',
+    address: '1711511251001',
     // phone: '',
-    email: ''
+    email: 'rosario.paredes0119@gmail.com'
   };
 
   selectedPercentageIndex = 0;

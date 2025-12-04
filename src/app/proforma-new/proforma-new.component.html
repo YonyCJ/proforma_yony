@@ -1,5 +1,5 @@
 <div class="container">
-<!--  <h1 class="title">Gestión de Productos y Proforma</h1>-->
+  <!--  <h1 class="title">Gestión de Productos y Proforma</h1>-->
 
   <!-- Contenedor que alinea el botón a la derecha -->
   <div class="flex justify-end">
@@ -152,7 +152,8 @@
         <th>Codigo</th>
         <th>Cantidad</th>
         <th>Precio Real</th>
-        <th>+1% Ganancia</th>
+
+        <!-- Ganancias fijas (5–50%) -->
         <th>+5% Ganancia</th>
         <th>+10% Ganancia</th>
         <th>+15% Ganancia</th>
@@ -161,10 +162,27 @@
         <th>+30% Ganancia</th>
         <th>+35% Ganancia</th>
         <th>+50% Ganancia</th>
+
+        <!-- Columna personalizada con input en cabecera -->
+        <th>
+          Pers. (%)
+          <div class="mt-1">
+            <input
+              type="number"
+              class="editable-input number-input w-16 text-xs"
+              [(ngModel)]="customPercentage"
+              (ngModelChange)="onCustomPercentageChange()"
+              placeholder="%"
+              style="color: #111;"
+            />
+          </div>
+        </th>
+
         <th>Imagen</th>
         <th>Acciones</th>
       </tr>
       </thead>
+
       <tbody>
       <tr *ngFor="let product of products; let i = index">
         <!-- Campo editable para el nombre del producto -->
@@ -214,20 +232,50 @@
             placeholder="0.00">
         </td>
 
-        <!-- Celdas de ganancias (no editables) -->
-        <td *ngFor="let profit of product.calculatedPrices; let j = index"
-            [class.selected]="product.selectedPercentageIndex === j"
-            [class.default]="product.selectedPercentageIndex === undefined && j === 0"
-            (click)="selectPercentage(i, j)"
+        <!-- Columnas de ganancias fijas 5–50% -->
+        <td *ngFor="let p of getVisibleProfits(product)"
+            [class.selected]="product.selectedPercentageIndex === p.idx"
+            [class.default]="product.selectedPercentageIndex === undefined && p.idx === 1"
+            (click)="selectPercentage(i, p.idx)"
             class="profit-cell tooltip-container"
-            [attr.data-tooltip]="'Precio venta: $' + (profit + (product.purchasePrice * product.quantity)).toFixed(2)"
+            [attr.data-tooltip]="'Precio venta: $' + (p.profit + (product.purchasePrice * product.quantity)).toFixed(2)"
         >
-          ${{ profit | number:'1.2-2' }}
+          ${{ p.profit | number:'1.2-2' }}
 
           <span class="tooltip">
-            Precio venta: ${{ (profit + (product.purchasePrice * product.quantity)).toFixed(2) }}
-          </span>
+    Precio venta: ${{ (p.profit + (product.purchasePrice * product.quantity)).toFixed(2) }}
+  </span>
         </td>
+
+        <!-- Columna personalizada (usa el % de la cabecera) -->
+        <td class="profit-cell tooltip-container custom-profit-cell"
+            [class.selected]="product.selectedPercentageIndex === CUSTOM_INDEX"
+            (click)="selectCustomPercentage(i)"
+            [attr.data-tooltip]="
+      customPercentage != null && !isNaN(customPercentage)
+        ? 'Precio venta: $' +
+          ((product.purchasePrice * product.quantity) + getCustomProfit(product)).toFixed(2)
+        : ''
+    "
+        >
+  <span *ngIf="customPercentage != null && !isNaN(customPercentage)">
+    ${{ getCustomProfit(product) | number:'1.2-2' }}
+  </span>
+
+          <span *ngIf="customPercentage == null || isNaN(customPercentage)"
+                class="text-xs text-gray-400">
+    —
+  </span>
+
+          <!-- tooltip interno, igual que en las otras columnas -->
+          <span class="tooltip"
+                *ngIf="customPercentage != null && !isNaN(customPercentage)">
+    Precio venta: {{
+              ((product.purchasePrice * product.quantity) + getCustomProfit(product)).toFixed(2)
+            }}
+  </span>
+        </td>
+
 
         <!-- NUEVA COLUMNA PARA IMAGEN -->
         <td class="image-cell">
@@ -266,19 +314,44 @@
   <!-- Selector de porcentaje para ganancia -->
   <div class="profit-section">
     <h3>Calcular Total</h3>
-    <div class="profit-display" *ngIf="totalProfit > 0">
-      <h4>Resumen de Ganancias (con IVA 15%)</h4>
-      <p><strong>Total Inversión:</strong> ${{ totalInvestment.toFixed(2) }}</p>
-      <p><strong>Total Con IVA:</strong> ${{ totalProfit.toFixed(2) }}</p>
-      <p><strong>Total Sin IVA:</strong> ${{ profitWithoutIVA().toFixed(2) }}</p>
-      <p><strong>Diezmo:</strong> ${{ (profitWithoutIVA() * 0.1).toFixed(2) }}</p>
+    <div class="profit-display" *ngIf="products.length > 0">
+      <h4>Resumen (con IVA 15%)</h4>
+
+      <p>
+        <strong>Total Inversión:</strong>
+        ${{ totalInvestment.toFixed(2) }}
+      </p>
+
+      <p>
+        <strong>Subtotal sin IVA:</strong>
+        ${{ getSubtotalWithoutIVA().toFixed(2) }}
+      </p>
+
+      <p>
+        <strong>IVA 15%:</strong>
+        ${{ getIVA().toFixed(2) }}
+      </p>
+
+      <p>
+        <strong>Total con IVA:</strong>
+        ${{ getTotal().toFixed(2) }}
+      </p>
+
+      <p>
+        <strong>Ganancia sin IVA:</strong>
+        ${{ profitWithoutIVA().toFixed(2) }}
+      </p>
+
+      <p>
+        <strong>Diezmo (10% ganancia sin IVA):</strong>
+        ${{ (profitWithoutIVA() * 0.1).toFixed(2) }}
+      </p>
     </div>
   </div>
 
 
-
-
-  <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mt-6" *ngIf="products.length > 0">
+  <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mt-6"
+       *ngIf="products.length > 0">
     <!-- Botón Guardar / Actualizar (arriba en móvil, derecha en desktop) -->
     <button
       class="px-6 py-2 bg-green-500 hover:bg-green-400 text-white text-sm font-semibold rounded-3 shadow-md hover:shadow-lg transition w-full md:w-auto flex items-center justify-center gap-2"
@@ -304,17 +377,6 @@
     </div>
 
   </div>
-
-
-
-
-
-
-
-
-
-
-
 
 
   <!-- Vista previa del PDF -->
@@ -381,7 +443,8 @@
                 </div>
               </td>
               <td style="text-align: center; vertical-align: middle;">{{ product.sku }}</td>
-              <td style="text-align: center; vertical-align: middle;">${{ getProductUnitPrice(product).toFixed(2) }}</td>
+              <td style="text-align: center; vertical-align: middle;">${{ getProductUnitPrice(product).toFixed(2) }}
+              </td>
               <td style="text-align: center; vertical-align: middle;">${{ getProductTotal(product).toFixed(2) }}</td>
             </tr>
             </tbody>
@@ -389,10 +452,10 @@
         </div>
 
         <div class="validity-text">
-          @if (getValidity() == 0 || getValidity() == null){
+          @if (getValidity() == 0 || getValidity() == null) {
             * {{ validityText }}
           } @else {
-            * Válido por {{getValidity()}} días
+            * Válido por {{ getValidity() }} días
           }
         </div>
 
@@ -415,10 +478,6 @@
 
 
 </div>
-
-
-
-
 
 
 <!-- CONTENIDO SOLO PARA EXPORTACIÓN A PDF (oculto al usuario) -->
@@ -488,10 +547,10 @@
         </tbody>
       </table>
       <div class="validity-text">
-        @if (getValidity() == 0 || getValidity() == null){
+        @if (getValidity() == 0 || getValidity() == null) {
           * {{ validityText }}
         } @else {
-          * Válido por {{getValidity()}} días
+          * Válido por {{ getValidity() }} días
         }
       </div>
 

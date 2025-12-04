@@ -76,6 +76,9 @@ export class ProformaNewComponent implements OnInit{
     email: 'rosario.paredes0119@gmail.com'
   };
 
+  readonly visiblePercentageIndices = [1, 2, 3, 4, 5, 6, 7, 8];
+  readonly CUSTOM_INDEX = -1;
+  customPercentage: number | null = null;
   selectedPercentageIndex = 0;
   percentages = [1,1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.5];
   IVA_RATE = 0.15;
@@ -139,44 +142,78 @@ export class ProformaNewComponent implements OnInit{
           transport: data.costTransport,
           observations: data.observations
         };
-        this.totalInvestment = data.inversion;
-        this.totalProfit = data.total;
+
+        this.totalInvestment  = data.inversion;
+        this.totalProfit      = data.total;
+        this.customPercentage = data.customPercentage ?? null;
 
         // Datos del cliente (customer)
         this.client = {
-          name: data.customer?.name || '',
-          document: data.customer?.ruc || '',
-          address: data.customer?.address || '',
-          email: data.customer?.email || ''
+          name:     data.customer?.name    || '',
+          document: data.customer?.ruc     || '',
+          address:  data.customer?.address || '',
+          email:    data.customer?.email   || ''
         };
 
         // Datos del vendedor (seller)
         this.seller = {
-          name: data.seller?.name || '',
-          document: data.seller?.ruc || '',
-          address: data.seller?.address || '',
-          email: data.seller?.email || ''
+          name:     data.seller?.name    || '',
+          document: data.seller?.ruc     || '',
+          address:  data.seller?.address || '',
+          email:    data.seller?.email   || ''
         };
+
+        // 👉 hay porcentaje personalizado?
+        const hasCustom = this.customPercentage != null;
 
         // Productos
         this.products = (data.product || []).map((p: any) => {
           const purchasePrice = Number(p.price);
-          const calculatedPrices = this.percentages.map(multiplier =>
-            parseFloat((purchasePrice * (multiplier - 1)).toFixed(2))
-          );
+          const quantity      = Number(p.quantity);
+
+          // recalcular GANANCIA TOTAL por fila como en addProduct/recalculateProductPrices
+          const calculatedPrices: number[] = [];
+          const totalPrices: number[]      = [];
+
+          this.percentages.forEach(percentageFactor => {
+            const base        = purchasePrice * quantity;          // precio * cantidad
+            const totalProfit = base * (percentageFactor - 1);     // ganancia total
+            const rounded     = +totalProfit.toFixed(2);
+
+            calculatedPrices.push(rounded);
+            totalPrices.push(rounded);
+          });
+
+          // mapear índice que viene de BD → índice que usa el front
+          const rawIndex = Number(p.percentageIndex ?? 0);
+          let selectedIndex: number;
+
+          if (hasCustom && rawIndex === 9) {
+            // 9 en BD = columna personalizada
+            selectedIndex = this.CUSTOM_INDEX; // -1
+          } else if (rawIndex >= 0 && rawIndex < this.percentages.length) {
+            // índices normales 0..8
+            selectedIndex = rawIndex;
+          } else {
+            // cualquier cosa rara => 0 (1%)
+            selectedIndex = 0;
+          }
 
           return {
+            id: p.id,
             name: p.name,
-            quantity: Number(p.quantity),
-            purchasePrice: purchasePrice,
-            selectedPercentageIndex: Number(p.percentageIndex),
+            quantity,
+            purchasePrice,
+            selectedPercentageIndex: selectedIndex,
             imageUrl: p.image,
             sku: p.sku,
-            calculatedPrices: calculatedPrices
-          };
+            calculatedPrices,
+            totalPrices
+          } as Product;
         });
 
-
+        // recalcular totales con la lógica actual del front
+        this.calculateProfit();
       },
       error: (err) => {
         console.error('Error al cargar la proforma:', err);
@@ -224,19 +261,22 @@ export class ProformaNewComponent implements OnInit{
       totalPrices: []
     };
     this.clearSelectedImage();
-    // Calcular precios con diferentes porcentajes (ya incluyen IVA)
-    this.percentages.forEach(percentage => {
-      const priceWithPercentage = (this.newProduct.purchasePrice * percentage) * this.newProduct.quantity;
-      const priceFinal = priceWithPercentage - (this.newProduct.purchasePrice * this.newProduct.quantity);
-      const roundedPrice = +(priceFinal.toFixed(2));
-      // console.log('Precio redondeado:', roundedPrice);
 
-      // Calculamos el subtotal para este porcentaje
-      const subtotal = roundedPrice * this.newProduct.quantity;
+    // Calcular GANANCIA TOTAL por fila con diferentes porcentajes
+    this.percentages.forEach(percentageFactor => {
+      // base = precio * cantidad
+      const base = this.newProduct.purchasePrice * this.newProduct.quantity;
 
-      product.calculatedPrices.push(roundedPrice);  // Precio unitario
-      product.totalPrices.push(subtotal);          // Subtotal (precio × cantidad)
+      // percentageFactor es 1, 1.05, 1.1, ..., 1.5
+      // ganancia total = base * (factor - 1)
+      const totalProfit = base * (percentageFactor - 1);
+      const roundedTotalProfit = +totalProfit.toFixed(2);
+
+      product.calculatedPrices.push(roundedTotalProfit); // ganancia total de la fila
+      product.totalPrices.push(roundedTotalProfit);      // puedes usarlo igual
     });
+
+
 
 
     this.products.push(product);
@@ -250,14 +290,26 @@ export class ProformaNewComponent implements OnInit{
   }
 
   selectPercentage(productIndex: number, percentageIndex: number) {
-    // Actualizar solo el producto específico
     this.products[productIndex].selectedPercentageIndex = percentageIndex;
-
-    // Si necesitas calcular ganancias por producto específico
-    this.calculateProfitForProduct(productIndex);
-    // Recalcular ganancias totales automáticamente
     this.calculateProfit();
   }
+
+
+  selectCustomPercentage(productIndex: number) {
+    if (this.customPercentage == null || isNaN(this.customPercentage)) {
+      return; // si no hay % definido, no hacemos nada
+    }
+    this.products[productIndex].selectedPercentageIndex = this.CUSTOM_INDEX;
+    this.calculateProfit();
+  }
+
+// cuando cambia el % personalizado
+  onCustomPercentageChange() {
+    // si no hay productos usando CUSTOM_INDEX, no hace falta recalcular,
+    // pero por simplicidad recalculamos siempre
+    this.calculateProfit();
+  }
+
 
   calculateProfitForProduct(productIndex: number) {
     const product = this.products[productIndex];
@@ -273,31 +325,43 @@ export class ProformaNewComponent implements OnInit{
     this.totalSale = 0;
     this.totalProfit = 0;
 
-    this.products.forEach((product, index) => {
+    this.products.forEach(product => {
       const investment = product.purchasePrice * product.quantity;
 
-      // Si no hay selección, usar 1% (índice 0)
-      const selectedIndex = product.selectedPercentageIndex !== undefined
-        ? product.selectedPercentageIndex
-        : 0; // Índice 0 corresponde al 1%
+      let salePricePerUnit: number;
 
-      // Calcular precio de venta usando el porcentaje seleccionado
-      const selectedPercentage = this.percentages[selectedIndex];
-      const salePrice = product.purchasePrice * (1 + selectedPercentage);
-      const sale = salePrice * product.quantity;
+      if (product.selectedPercentageIndex === this.CUSTOM_INDEX &&
+        this.customPercentage != null &&
+        !isNaN(this.customPercentage)) {
+
+        // 🟣 caso Pers. (%): ganancia = customPercentage %
+        const gainFactor = 1 + (this.customPercentage / 100);
+        salePricePerUnit = product.purchasePrice * gainFactor;
+
+      } else {
+        // 🟢 caso normal 5–50%: usar factor tal cual (1, 1.05, 1.1, ..., 1.5)
+        const selectedIndex = product.selectedPercentageIndex ?? 0;
+        const selectedPercentage = this.percentages[selectedIndex];
+
+        salePricePerUnit = product.purchasePrice * selectedPercentage;
+      }
+
+      const sale = salePricePerUnit * product.quantity;
 
       this.totalInvestment += investment;
       this.totalSale += sale;
     });
 
-    // Calcular ganancia total
     this.totalProfit = this.totalSale - this.totalInvestment;
   }
 
 
+  // Utilidad (ganancia) sin IVA
   profitWithoutIVA(): number {
-    return this.totalProfit / 1.15;
+    // venta sin IVA - inversión
+    return this.getSubtotalWithoutIVA() - this.totalInvestment;
   }
+
 
   previewPDF() {
     if (this.products.length === 0) {
@@ -321,14 +385,6 @@ export class ProformaNewComponent implements OnInit{
       alert('No hay productos para exportar');
       return;
     }
-
-    // 🔍 DEBUG opcional: asegura que las funciones devuelven valores
-    console.log('Totales ANTES de render PDF', {
-      subtotalSinIva: this.getSubtotalWithoutIVA(),
-      iva: this.getIVA(),
-      otros: this.getTransport(),
-      total: this.getTotal()
-    });
 
     // 1) Forzar que Angular pinte el template con los valores actuales
     this.cd.detectChanges();
@@ -506,28 +562,20 @@ export class ProformaNewComponent implements OnInit{
   recalculateProductPrices(index: number) {
     const product = this.products[index];
 
-    // Limpiar arrays existentes
     product.calculatedPrices = [];
     product.totalPrices = [];
 
-    // Recalcular ganancias con todos los porcentajes
-    this.percentages.forEach(percentage => {
-      // Precio de venta = precio compra * (1 + porcentaje)
-      const salePrice = (product.purchasePrice * percentage) * product.quantity;
-      // Ganancia unitaria = precio venta - precio compra
-      const priceQuantity = product.purchasePrice * product.quantity
-      const unitProfit = salePrice  - priceQuantity;
-      const roundedProfit = +(unitProfit.toFixed(2));
-      // console.log('Precio de venta:', salePrice);
+    this.percentages.forEach(percentageFactor => {
+      const base = product.purchasePrice * product.quantity; // precio * cantidad
+      const totalProfit = base * (percentageFactor - 1);
+      const roundedTotalProfit = +totalProfit.toFixed(2);
 
-      // Ganancia total = ganancia unitaria * cantidad
-      const totalProfit = roundedProfit * product.quantity;
-
-
-      product.calculatedPrices.push(roundedProfit);  // Ganancia unitaria
-      product.totalPrices.push(totalProfit);         // Ganancia total
+      product.calculatedPrices.push(roundedTotalProfit); // ganancia total de la fila
+      product.totalPrices.push(roundedTotalProfit);
     });
   }
+
+
 
   // Método para detectar cambios en tiempo real (opcional)
   onProductNameChange(index: number) {
@@ -583,27 +631,32 @@ export class ProformaNewComponent implements OnInit{
   }
 
 
-  // Obtener el precio unitario de venta (sin IVA) para un producto específico
-  getProductUnitPrice(product: any): number {
-    // Si no hay selección, usar 1% (índice 0)
-    const selectedIndex = product.selectedPercentageIndex !== undefined
-      ? product.selectedPercentageIndex
-      : 0;
+  getProductUnitPrice(product: Product): number {
+    let salePriceWithIVA: number;
 
-    // Calcular precio de venta con el porcentaje seleccionado
-    const selectedPercentage = this.percentages[selectedIndex];
-    const salePrice = product.purchasePrice * (selectedPercentage);
+    if (product.selectedPercentageIndex === this.CUSTOM_INDEX &&
+      this.customPercentage != null &&
+      !isNaN(this.customPercentage)) {
 
-    // Retornar precio sin IVA
-    return salePrice / this.IVA_FACTOR;
+      const gainFactor = 1 + (this.customPercentage / 100);
+      salePriceWithIVA = product.purchasePrice * gainFactor;
+
+    } else {
+      const selectedIndex = product.selectedPercentageIndex ?? 0;
+      const selectedPercentage = this.percentages[selectedIndex];
+      salePriceWithIVA = product.purchasePrice * selectedPercentage;
+    }
+
+    return salePriceWithIVA / this.IVA_FACTOR;
   }
 
 
-  // Obtener el total para un producto específico (sin IVA)
-  getProductTotal(product: any): number {
+
+  getProductTotal(product: Product): number {
     const unitPrice = this.getProductUnitPrice(product);
     return unitPrice * product.quantity;
   }
+
 
   // Calcular subtotal sin IVA de todos los productos
   getSubtotalWithoutIVA(): number {
@@ -701,6 +754,7 @@ export class ProformaNewComponent implements OnInit{
       diezmo: Number(getDiezmo.toFixed(2)),
       iva: Number(this.getIVA().toFixed(2)),
       total: Number(this.totalProfit.toFixed(2)),
+      customPercentage: this.customPercentage,
       customer: {
         name: this.client.name,
         address: this.client.address,
@@ -717,7 +771,11 @@ export class ProformaNewComponent implements OnInit{
         name: p.name,
         quantity: p.quantity,
         price: Number(p.purchasePrice.toFixed(2)),
-        percentageIndex: p.selectedPercentageIndex ?? 0,
+        percentageIndex:
+          p.selectedPercentageIndex === this.CUSTOM_INDEX
+            ? 9
+            : (p.selectedPercentageIndex ?? 0),
+
         image: p.imageUrl,
         sku: p.sku
       }))
@@ -754,6 +812,7 @@ export class ProformaNewComponent implements OnInit{
       diezmo: Number(getDiezmo.toFixed(2)),
       iva: Number(this.getIVA().toFixed(2)),
       total: Number(this.totalProfit.toFixed(2)),
+      customPercentage: this.customPercentage,
       customer: {
         name: this.client.name,
         address: this.client.address,
@@ -770,7 +829,11 @@ export class ProformaNewComponent implements OnInit{
         name: p.name,
         quantity: p.quantity,
         price: Number(p.purchasePrice.toFixed(2)),
-        percentageIndex: p.selectedPercentageIndex ?? 0,
+        percentageIndex:
+          p.selectedPercentageIndex === this.CUSTOM_INDEX
+            ? 9
+            : (p.selectedPercentageIndex ?? 0),
+
         image: p.imageUrl,
         sku: p.sku
       }))
@@ -799,9 +862,29 @@ export class ProformaNewComponent implements OnInit{
     }
   }
 
+  getVisibleProfits(product: Product) {
+    return this.visiblePercentageIndices.map(idx => ({
+      idx,
+      profit: product.calculatedPrices[idx]
+    }));
+  }
+
+  getCustomProfit(product: Product): number {
+    if (this.customPercentage == null || isNaN(this.customPercentage)) {
+      return 0;
+    }
+
+    // base = precio * cantidad
+    const base = product.purchasePrice * product.quantity;
+
+    // ganancia TOTAL de la fila con el % personalizado
+    const profit = base * (this.customPercentage / 100);
+
+    return +profit.toFixed(2);
+  }
 
 
 
 
-
+  protected readonly isNaN = isNaN;
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {DecimalPipe, NgForOf, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import html2pdf from 'html2pdf.js';
@@ -50,6 +50,7 @@ interface Seller {
   styleUrl: './proforma-new.component.css'
 })
 export class ProformaNewComponent implements OnInit{
+  @ViewChild('pdfExportElement') pdfExportElement!: ElementRef;
 
   products: Product[] = [];
   newProduct = {
@@ -110,7 +111,8 @@ export class ProformaNewComponent implements OnInit{
   constructor(private http: HttpClient,
               private route: ActivatedRoute,
               private router: Router,
-              private proformaService: ProformaService) {
+              private proformaService: ProformaService,
+              private cd: ChangeDetectorRef) {
 
   }
 
@@ -297,25 +299,6 @@ export class ProformaNewComponent implements OnInit{
     return this.totalProfit / 1.15;
   }
 
-  getSubtotal(): number {
-    return this.products.reduce((sum, product) => {
-      return sum + (product.calculatedPrices[this.selectedPercentageIndex] * product.quantity);
-    }, 0);
-  }
-
-  // Si necesitas el subtotal SIN IVA (opcional)
-  /*getSubtotalWithoutIVA(): number {
-    return this.getSubtotal() / this.IVA_FACTOR;
-  }
-
-  getIVA(): number {
-    return this.getSubtotalWithoutIVA() * this.IVA_RATE;
-  }
-
-  getTotal(): number {
-    return this.getSubtotalWithoutIVA() + this.getIVA();
-  }*/
-
   previewPDF() {
     if (this.products.length === 0) {
       alert('No hay productos para mostrar en la vista previa');
@@ -333,134 +316,93 @@ export class ProformaNewComponent implements OnInit{
     };
   }
 
-
-  /*generatePDF(): void {
-    const element = document.querySelector('.pdf-export-only');
-
-    if (!element) {
-      console.error('Elemento para exportar no encontrado.');
-      return;
-    }
-
-    const opt = {
-      margin: 0.3,
-      filename: `proforma_${new Date().getTime()}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-
-    const elementRef = element as HTMLElement;
-    elementRef.style.display = 'block';
-
-    html2pdf()
-      .set(opt)
-      .from(elementRef)
-      .toPdf()
-      .get('pdf')
-      .then(async (pdf: any) => {
-        const totalPages = pdf.internal.getNumberOfPages();
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-
-        // Carga imagen como base64
-        const imageBase64 = await this.loadImageAsBase64('assets/img/circu.png');
-
-        const imgWidth = 4; // pulgadas (ajusta según necesites)
-        const imgHeight = 4;
-
-        const x = (pageWidth - imgWidth) / 2;
-        const y = (pageHeight - imgHeight) / 2;
-
-        for (let i = 1; i <= totalPages; i++) {
-          pdf.setPage(i);
-
-          // Opcional: reducir opacidad
-          pdf.setGState?.(new pdf.GState({ opacity: 0.1 }));
-
-          pdf.addImage(imageBase64, 'PNG', x, y, imgWidth, imgHeight);
-        }
-      })
-      .outputPdf('bloburl')
-      .then((url: string) => {
-        window.open(url, '_blank');
-        elementRef.style.display = 'none';
-      });
-  }*/
-
   generatePDF(): void {
-    const element = document.querySelector('.pdf-export-only') as HTMLElement;
-    if (!element) {
-      console.error('Elemento para exportar no encontrado.');
+    if (!this.products.length) {
+      alert('No hay productos para exportar');
       return;
     }
 
-    // Mostramos temporalmente el contenido
-    element.style.display = 'block';
-
-    // Esperar a que todas las imágenes estén cargadas
-    const images = element.querySelectorAll('img');
-    const imgPromises = Array.from(images).map((img: HTMLImageElement) => {
-      return new Promise<void>(resolve => {
-        if (img.complete && img.naturalHeight !== 0) {
-          resolve();
-        } else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        }
-      });
+    // 🔍 DEBUG opcional: asegura que las funciones devuelven valores
+    console.log('Totales ANTES de render PDF', {
+      subtotalSinIva: this.getSubtotalWithoutIVA(),
+      iva: this.getIVA(),
+      otros: this.getTransport(),
+      total: this.getTotal()
     });
 
-    Promise.all(imgPromises).then(async () => {
-      const number   = this.proformaData?.number || '000';
-      const date     = this.proformaData?.date   || new Date().toISOString().split('T')[0];
-      const fileName = `PROFORMA N° ${number} - ${date}.pdf`;
+    // 1) Forzar que Angular pinte el template con los valores actuales
+    this.cd.detectChanges();
 
-      const opt = {
-        margin:       0.3,
-        filename:     fileName,
-        image:        { type: 'jpeg' as const, quality: 1.0 },
-        html2canvas:  { scale: 4, useCORS: true, scrollY: 0 },
-        jsPDF:        { unit: 'in' as const, format: 'a4' as const, orientation: 'portrait' as const }
-      };
+    // 2) Darle un tick al event loop para que el DOM se actualice
+    setTimeout(() => {
+      const element = this.pdfExportElement?.nativeElement as HTMLElement;
+      if (!element) {
+        console.error('Elemento para exportar no encontrado.');
+        return;
+      }
 
-      html2pdf()
-        .set(opt)
-        .from(element)
-        .toPdf()
-        .get('pdf')
-        .then(async (pdf: any) => {
-          const totalPages = pdf.internal.getNumberOfPages();
-          const pageWidth = pdf.internal.pageSize.getWidth();
-          const pageHeight = pdf.internal.pageSize.getHeight();
+      // Mostrar temporalmente el contenido oculto
+      element.style.display = 'block';
 
-          // Cargar marca de agua
-          const watermark = await this.loadImageAsBase64('assets/img/circu.png');
-          const imgW = 4;
-          const imgH = 4;
-          const x = (pageWidth - imgW) / 2;
-          const y = (pageHeight - imgH) / 2;
-
-          // Añadir watermark a todas las páginas
-          for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
-            pdf.setGState(new pdf.GState({ opacity: 0.1 }));
-            pdf.addImage(watermark, 'PNG', x, y, imgW, imgH);
-            pdf.setGState(new pdf.GState({ opacity: 1.0 })); // Restaurar opacidad normal
+      // Esperar a que las imágenes carguen
+      const images = element.querySelectorAll('img');
+      const imgPromises = Array.from(images).map((img: HTMLImageElement) => {
+        return new Promise<void>(resolve => {
+          if (img.complete && img.naturalHeight !== 0) {
+            resolve();
+          } else {
+            img.onload = () => resolve();
+            img.onerror = () => resolve();
           }
-
-          pdf.save(fileName);
-          element.style.display = 'none';
-        })
-        .catch((err: unknown) => {
-          console.error('Error generando PDF:', err);
-          element.style.display = 'none';
         });
-    });
+      });
+
+      Promise.all(imgPromises).then(async () => {
+        const number   = this.proformaData?.number || '000';
+        const date     = this.proformaData?.date   || new Date().toISOString().split('T')[0];
+        const fileName = `PROFORMA N° ${number} - ${date}.pdf`;
+
+        const opt = {
+          margin:       0.3,
+          filename:     fileName,
+          image:        { type: 'jpeg' as const, quality: 1.0 },
+          html2canvas:  { scale: 4, useCORS: true, scrollY: 0 },
+          jsPDF:        { unit: 'in' as const, format: 'a4' as const, orientation: 'portrait' as const }
+        };
+
+        html2pdf()
+          .set(opt)
+          .from(element)
+          .toPdf()
+          .get('pdf')
+          .then(async (pdf: any) => {
+            const totalPages = pdf.internal.getNumberOfPages();
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            const watermark = await this.loadImageAsBase64('assets/img/circu.png');
+            const imgW = 4;
+            const imgH = 4;
+            const x = (pageWidth - imgW) / 2;
+            const y = (pageHeight - imgH) / 2;
+
+            for (let i = 1; i <= totalPages; i++) {
+              pdf.setPage(i);
+              pdf.setGState(new pdf.GState({ opacity: 0.1 }));
+              pdf.addImage(watermark, 'PNG', x, y, imgW, imgH);
+              pdf.setGState(new pdf.GState({ opacity: 1.0 }));
+            }
+
+            pdf.save(fileName);
+            element.style.display = 'none';
+          })
+          .catch((err: unknown) => {
+            console.error('Error generando PDF:', err);
+            element.style.display = 'none';
+          });
+      });
+    }, 0);
   }
-
-
-
 
 
   loadImageAsBase64(url: string): Promise<string> {

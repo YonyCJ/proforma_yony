@@ -8,7 +8,7 @@ import {PagedResult} from './PagedResult';
 })
 export class ProformaService {
   // private apiUrl = 'http://localhost:8081/proforma';
-  private apiUrl = 'https://proformabackend-production.up.railway.app/proforma';
+  private apiUrl = 'https://api.proforma.gestionesavitac.top/proforma';
 
   constructor(private http: HttpClient) {}
 

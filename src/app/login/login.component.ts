@@ -17,7 +17,12 @@ import {AuthService} from '../auth.service';
 export class LoginComponent {
   username = '';
   password = '';
+  showPassword = false;
   error = '';
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   constructor(private authService: AuthService, private router: Router) {}
 
